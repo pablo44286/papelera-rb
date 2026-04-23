@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Papelera RB</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #185FA5;
+    --verde-claro: #378ADD;
+    --verde-pale: #E6F1FB;
+    --crema: #f4f7fb;
+    --naranja: #378ADD;
+    --texto: #1b1b1b;
+    --gris: #6b7280;
+    --borde: #e5e7eb;
+    --blanco: #ffffff;
+    --sombra: 0 4px 24px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--crema); color: var(--texto); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: var(--verde);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .header-logo { display: flex; flex-direction: column; }
+  .header-logo h1 { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 900; letter-spacing: -0.5px; }
+  .header-logo span { font-size: 0.7rem; opacity: 0.75; font-weight: 300; letter-spacing: 0.5px; }
+  .carrito-btn {
+    background: var(--naranja);
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .carrito-btn:hover { background: #185FA5; transform: scale(1.03); }
+  .badge {
+    background: white;
+    color: var(--naranja);
+    border-radius: 50%;
+    width: 20px; height: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* INFO BAR */
+  .info-bar {
+    background: var(--verde-pale);
+    padding: 8px 20px;
+    font-size: 0.78rem;
+    color: var(--verde);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    border-bottom: 1px solid #B5D4F4;
+  }
+  .info-bar span { display: flex; align-items: center; gap: 4px; }
+
+  /* MAIN */
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+
+  /* BUSCADOR */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .search-bar input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--borde);
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    background: white;
+    transition: border 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--verde-claro); }
+
+  /* CATEGORÍAS */
+  .cats-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700; color: var(--verde); margin-bottom: 12px; }
+  .cats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .cat-card {
+    background: white;
+    border: 2px solid var(--borde);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--texto);
+  }
+  .cat-card:hover { border-color: var(--verde-claro); background: var(--verde-pale); transform: translateY(-2px); }
+  .cat-card.active { border-color: var(--verde); background: var(--verde); color: white; }
+  .cat-card .cat-icon { font-size: 1.5rem; margin-bottom: 6px; display: block; }
+  .cat-count { font-size: 0.7rem; opacity: 0.6; margin-top: 3px; }
+
+  /* PRODUCTOS */
+  .productos-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .productos-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 700; color: var(--verde); }
+  .productos-count { font-size: 0.82rem; color: var(--gris); }
+  .productos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .prod-card {
+    background: white;
+    border: 1.5px solid var(--borde);
+    border-radius: 12px;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    transition: all 0.2s;
+  }
+  .prod-card:hover { border-color: var(--verde-claro); box-shadow: var(--sombra); }
+  .prod-nombre { font-weight: 600; font-size: 0.75rem; line-height: 1.3; color: #0C447C; min-height: 32px; display: flex; align-items: center; justify-content: center; }
+  .prod-detalle { font-size: 0.68rem; color: var(--gris); }
+  .prod-cat-tag {
+    font-size: 0.7rem;
+    background: var(--verde-pale);
+    color: var(--verde);
+    padding: 2px 8px;
+    border-radius: 20px;
+    width: fit-content;
+  }
+  .prod-footer { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 4px; width: 100%; }
+  .prod-precio { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 700; color: var(--verde); }
+  .add-btn {
+    background: var(--verde);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 100%;
+    padding: 6px 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .add-btn:hover { background: var(--naranja); }
+
+  /* CARRITO PANEL */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 200;
+    backdrop-filter: blur(2px);
+  }
+  .overlay.open { display: block; }
+  .carrito-panel {
+    position: fixed;
+    right: 0; top: 0; bottom: 0;
+    width: min(420px, 100vw);
+    background: white;
+    z-index: 201;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -8px 0 40px rgba(0,0,0,0.12);
+  }
+  .carrito-panel.open { transform: translateX(0); }
+  .panel-header {
+    background: var(--verde);
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-header h2 { font-family: 'Fraunces', serif; font-size: 1.2rem; }
+  .close-btn { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; line-height: 1; }
+  .panel-body { flex: 1; overflow-y: auto; padding: 16px; }
+  .empty-cart { text-align: center; padding: 40px 20px; color: var(--gris); }
+  .empty-cart .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+
+  /* ITEMS CARRITO */
+  .cart-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--borde);
+  }
+  .cart-item-info { flex: 1; }
+  .cart-item-nombre { font-weight: 600; font-size: 0.88rem; }
+  .cart-item-detalle { font-size: 0.75rem; color: var(--gris); }
+  .cart-item-precio { font-size: 0.82rem; color: var(--verde); font-weight: 600; margin-top: 2px; }
+  .cart-item-controls { display: flex; align-items: center; gap: 8px; }
+  .qty-btn {
+    background: var(--verde-pale);
+    color: var(--verde);
+    border: none;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+  .qty-btn:hover { background: var(--verde); color: white; }
+  .qty-num { font-weight: 700; font-size: 0.9rem; min-width: 20px; text-align: center; }
+  .del-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem; padding: 4px; }
+
+  /* FORMULARIO */
+  .form-section { padding: 16px; border-top: 2px solid var(--verde-pale); }
+  .form-section h3 { font-family: 'Fraunces', serif; font-size: 1rem; color: var(--verde); margin-bottom: 12px; }
+  .form-group { margin-bottom: 10px; }
+  .form-group label { font-size: 0.78rem; font-weight: 600; color: var(--gris); display: block; margin-bottom: 4px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--borde);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--verde-claro); }
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-opt { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer; }
+  .radio-opt input { width: auto; }
+  .entrega-opts { display: flex; gap: 10px; margin-bottom: 10px; }
+  .entrega-btn {
+    flex: 1;
+    padding: 9px;
+    border: 2px solid var(--borde);
+    border-radius: 10px;
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .entrega-btn.active { border-color: var(--verde); background: var(--verde-pale); color: var(--verde); }
+
+  /* TOTAL Y BOTONES */
+  .total-bar {
+    padding: 14px 16px;
+    background: var(--verde-pale);
+    border-top: 1px solid #B5D4F4;
+  }
+  .total-row { display: flex; justify-content: space-between; align-items: center; }
+  .total-label { font-size: 0.85rem; color: var(--gris); }
+  .total-amount { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900; color: var(--verde); }
+  .send-btns { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px 20px; }
+  .btn-wsp {
+    background: #25d366;
+    color: white;
+    border: none;
+    padding: 13px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-wsp:hover { background: #1ebe5d; }
+  .btn-email {
+    background: var(--verde);
+    color: white;
+    border: none;
+    padding: 13px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .btn-email:hover { background: #0C447C; }
+
+  /* MODAL CONFIRMACION */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 300;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 32px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h3 { font-family: 'Fraunces', serif; font-size: 1.2rem; color: var(--verde); margin-bottom: 8px; }
+  .modal p { font-size: 0.85rem; color: var(--gris); margin-bottom: 16px; }
+  .modal-preview {
+    background: var(--crema);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    max-height: 140px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+    font-family: monospace;
+  }
+  .modal-btns { display: flex; flex-direction: column; gap: 8px; }
+  .modal-btn {
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-wsp2 { background: #25d366; color: white; }
+  .btn-wsp2:hover { background: #1ebe5d; }
+  .btn-copy { background: var(--verde-pale); color: var(--verde); }
+  .btn-copy:hover { background: var(--verde); color: white; }
+  .btn-email2 { background: var(--verde); color: white; }
+  .btn-email2:hover { background: #0C447C; }
+  .btn-cancel { background: var(--borde); color: var(--gris); }
+  .btn-cancel:hover { background: #d1d5db; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--verde);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    z-index: 400;
+    transition: transform 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    .cats-grid { grid-template-columns: repeat(2, 1fr); }
+    .productos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <h1>Papelera RB</h1>
+    <span>Funes, Santa Fe</span>
+  </div>
+  <button class="carrito-btn" onclick="toggleCarrito()">
+    🛒 Carrito <span class="badge" id="badge">0</span>
+  </button>
+</header>
+
+<div class="info-bar">
+  <span>📍 Funes, Santa Fe</span>
+  <span>📞 3476 60-9867 / 341-624-4131</span>
+  <span>✉️ pablo44_286@hotmail.com</span>
+  <span>✉️ barbarababya29@gmail.com</span>
+</div>
+
+<main>
+  <div class="search-bar">
+    <input type="text" id="buscador" placeholder="🔍  Buscar producto..." oninput="filtrar()">
+  </div>
+
+  <div id="vista-cats">
+    <div class="cats-title">¿Qué necesitás?</div>
+    <div class="cats-grid" id="cats-grid"></div>
+  </div>
+
+  <div id="vista-prods" style="display:none;">
+    <div class="productos-header">
+      <div>
+        <button onclick="volverCats()" style="background:none;border:none;color:var(--verde);cursor:pointer;font-size:0.85rem;font-weight:600;margin-bottom:4px;padding:0;">← Volver</button>
+        <div class="productos-title" id="prod-titulo">Productos</div>
+      </div>
+      <div class="productos-count" id="prod-count"></div>
+    </div>
+    <div class="productos-grid" id="prods-grid"></div>
+  </div>
+</main>
+
+<!-- OVERLAY + CARRITO -->
+<div class="overlay" id="overlay" onclick="toggleCarrito()"></div>
+<div class="carrito-panel" id="carrito-panel">
+  <div class="panel-header">
+    <h2>🛒 Tu pedido</h2>
+    <button class="close-btn" onclick="toggleCarrito()">✕</button>
+  </div>
+  <div class="panel-body" id="panel-body">
+    <div class="empty-cart">
+      <div class="empty-icon">🛍️</div>
+      <p>Tu carrito está vacío.<br>Agregá productos desde las categorías.</p>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>Tus datos</h3>
+    <div class="form-group">
+      <label>Nombre y apellido *</label>
+      <input type="text" id="f-nombre" placeholder="Juan García">
+    </div>
+    <div class="form-group">
+      <label>Teléfono *</label>
+      <input type="tel" id="f-tel" placeholder="341 000-0000">
+    </div>
+    <div class="form-group">
+      <label>Forma de pago</label>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="pago" value="Contado" checked> Contado</label>
+        <label class="radio-opt"><input type="radio" name="pago" value="Transferencia"> Transferencia</label>
+        <label class="radio-opt"><input type="radio" name="pago" value="Tarjeta"> Tarjeta</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>¿Cómo recibís tu pedido?</label>
+      <div class="entrega-opts">
+        <button class="entrega-btn active" id="btn-envio" onclick="setEntrega('envio')">🚚 Envío</button>
+        <button class="entrega-btn" id="btn-retiro" onclick="setEntrega('retiro')">🏪 Retiro</button>
+      </div>
+    </div>
+    <div id="campos-envio">
+      <div class="form-group">
+        <label>Calle y número *</label>
+        <input type="text" id="f-calle" placeholder="San Martín 456">
+      </div>
+      <div class="form-group">
+        <label>Barrio / Localidad *</label>
+        <input type="text" id="f-barrio" placeholder="Funes">
+      </div>
+    </div>
+    <div id="campos-retiro" style="display:none;">
+      <div class="form-group">
+        <label>Día preferido</label>
+        <select id="f-dia">
+          <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+          <option>Jueves</option><option>Viernes</option><option>Sábado</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Horario</label>
+        <select id="f-horario">
+          <option>Mañana (8 a 12 hs)</option>
+          <option>Tarde (12 a 18 hs)</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Notas adicionales</label>
+      <textarea id="f-notas" rows="2" placeholder="Aclaraciones, referencias..."></textarea>
+    </div>
+  </div>
+
+  <div class="total-bar">
+    <div class="total-row">
+      <span class="total-label">Total estimado</span>
+      <span class="total-amount" id="total-amount">$0</span>
+    </div>
+    
+  </div>
+
+  <div class="send-btns">
+    <button class="btn-wsp" onclick="abrirModal('wsp')">💬 Enviar por WhatsApp</button>
+    <button class="btn-email" onclick="abrirModal('email')">📧 Enviar por Email</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3>Confirmar pedido</h3>
+    <p>Revisá el detalle antes de enviar:</p>
+    <div class="modal-preview" id="modal-preview"></div>
+    <div class="modal-btns" id="modal-btns"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATOS ───────────────────────────────────────────────────────────────────
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzrbCYKFiqkDcChhYq9GKhfw7G-5eTM9vBYMDF89ZqXPl_mXMlzm2Nij85QrpXauOBwQA/exec';
+const GSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQm5BX20NWwS5Ff_d_fFXFK5HduGwUIuPfPDzOYeMXyf2V7ztwRG451uIOg2i3oVHj7PqKtV5XbARJF/pub?gid=2104095763&single=true&output=csv';
+// Datos embebidos (lista de precios actual)
+const PRODUCTOS_DATA = [{"n":"Dispenser p/jabón líquido","c":"Accesorios","d":"x unid.","p":21720.0},{"n":"Dispenser p/papel higiénico","c":"Accesorios","d":"x unid.","p":21840.0},{"n":"Porta número","c":"Accesorios","d":"x 200 unid.","p":12240.0},{"n":"Porta rollo 40+60cm","c":"Accesorios","d":"x unid.","p":34200.0},{"n":"Porta rollo 40cm","c":"Accesorios","d":"x 200 unid.","p":23520.0},{"n":"Porta rollo 60cm","c":"Accesorios","d":"x 100 unid.","p":26040.0},{"n":"Porta rollo pared","c":"Accesorios","d":"x unid.","p":35880.0},{"n":"Toallero plástico p/toalla","c":"Accesorios","d":"x unid.","p":21000.0},{"n":"Bandeja C 200 (289x140)","c":"Bandejas de Aluminio","d":"x unid.","p":672.0},{"n":"Bandeja F 100 (214x144)","c":"Bandejas de Aluminio","d":"x unid.","p":240.0},{"n":"Bandeja F 200 (292x190)","c":"Bandejas de Aluminio","d":"x unid.","p":516.0},{"n":"Bandeja F 50","c":"Bandejas de Aluminio","d":"x unid.","p":192.0},{"n":"Bandeja F 75","c":"Bandejas de Aluminio","d":"x unid.","p":228.0},{"n":"Plato P 15","c":"Bandejas de Aluminio","d":"x unid.","p":144.0},{"n":"Plato P 20","c":"Bandejas de Aluminio","d":"x unid.","p":228.0},{"n":"Plato P 23","c":"Bandejas de Aluminio","d":"x unid.","p":312.0},{"n":"Plato P 26","c":"Bandejas de Aluminio","d":"x unid.","p":348.0},{"n":"Plato P 30","c":"Bandejas de Aluminio","d":"x unid.","p":492.0},{"n":"Plato P 33","c":"Bandejas de Aluminio","d":"x unid.","p":612.0},{"n":"Bandeja N°1 econ.","c":"Bandejas de Cartón","d":"x 100 unid.","p":2160.0},{"n":"Bandeja N°12","c":"Bandejas de Cartón","d":"x 100 unid.","p":6000.0},{"n":"Bandeja N°13","c":"Bandejas de Cartón","d":"x 100 unid.","p":7560.0},{"n":"Bandeja N°13.5","c":"Bandejas de Cartón","d":"x 100 unid.","p":9240.0},{"n":"Bandeja N°14","c":"Bandejas de Cartón","d":"x 100 unid.","p":9480.0},{"n":"Bandeja N°15","c":"Bandejas de Cartón","d":"x 100 unid.","p":13800.0},{"n":"Bandeja N°16","c":"Bandejas de Cartón","d":"x 100 unid.","p":15120.0},{"n":"Bandeja N°2 econ.","c":"Bandejas de Cartón","d":"x 100 unid.","p":2760.0},{"n":"Bandeja N°3 econ.","c":"Bandejas de Cartón","d":"x 100 unid.","p":3480.0},{"n":"Bandeja N°4 econ.","c":"Bandejas de Cartón","d":"x 100 unid.","p":4080.0},{"n":"Bandeja N°5 econ.","c":"Bandejas de Cartón","d":"x 100 unid.","p":4440.0},{"n":"Bandeja N°6","c":"Bandejas de Cartón","d":"x 100 unid.","p":8040.0},{"n":"Bandeja N°7","c":"Bandejas de Cartón","d":"x 100 unid.","p":9000.0},{"n":"Bandeja dorada rect. 1 Kg","c":"Bandejas Doradas","d":"x unid.","p":636.0},{"n":"\"Bandeja dorada rect. 1,5 Kg\"","c":"Bandejas Doradas","d":"x unid.","p":732.0},{"n":"Bandeja dorada rect. 1/2 Kg","c":"Bandejas Doradas","d":"x unid.","p":456.0},{"n":"Bandeja dorada rect. 1/4 Kg","c":"Bandejas Doradas","d":"x unid.","p":306.0},{"n":"Bandeja dorada rect. 2 Kg","c":"Bandejas Doradas","d":"x unid.","p":936.0},{"n":"Bandeja dorada rect. 3 Kg","c":"Bandejas Doradas","d":"x unid.","p":1740.0},{"n":"Bandeja dorada rect. 3/4 Kg","c":"Bandejas Doradas","d":"x unid.","p":552.0},{"n":"Bandeja dorada rect. 5 Kg","c":"Bandejas Doradas","d":"x unid.","p":3600.0},{"n":"Bandeja dorada redonda 18cm","c":"Bandejas Doradas","d":"x unid.","p":456.0},{"n":"Bandeja dorada redonda 22cm","c":"Bandejas Doradas","d":"x unid.","p":480.0},{"n":"Bandeja dorada redonda 24cm","c":"Bandejas Doradas","d":"x unid.","p":660.0},{"n":"Bandeja dorada redonda 26cm","c":"Bandejas Doradas","d":"x unid.","p":696.0},{"n":"Bandeja dorada redonda 28cm","c":"Bandejas Doradas","d":"x unid.","p":840.0},{"n":"Bandeja dorada redonda 31cm","c":"Bandejas Doradas","d":"x unid.","p":990.0},{"n":"Bandeja dorada redonda 34cm","c":"Bandejas Doradas","d":"x unid.","p":1140.0},{"n":"Bandeja dorada redonda 36cm","c":"Bandejas Doradas","d":"x unid.","p":1500.0},{"n":"Bandeja N°15","c":"Bandejas Expandido","d":"x 400 unid.","p":42960.0},{"n":"Bandeja N°17","c":"Bandejas Expandido","d":"x 400 unid.","p":24240.0},{"n":"Bandeja N°18","c":"Bandejas Expandido","d":"x 400 unid.","p":33480.0},{"n":"Bandeja N°19","c":"Bandejas Expandido","d":"x 400 unid.","p":45720.0},{"n":"Bandeja N°21","c":"Bandejas Expandido","d":"x 400 unid.","p":29040.0},{"n":"Bandeja N°25","c":"Bandejas Expandido","d":"x 200 unid.","p":32760.0},{"n":"Bandeja N°28 redonda","c":"Bandejas Expandido","d":"x 200 unid.","p":45540.0},{"n":"Bandeja N°30","c":"Bandejas Expandido","d":"x 100 unid.","p":57840.0},{"n":"Oblea N°18","c":"Bandejas Expandido","d":"x 600 unid.","p":42960.0},{"n":"Oblea N°19","c":"Bandejas Expandido","d":"x 400 unid.","p":39600.0},{"n":"Oblea N°20","c":"Bandejas Expandido","d":"x 900 unid.","p":53400.0},{"n":"Oblea N°30","c":"Bandejas Expandido","d":"x 400 unid.","p":54900.0},{"n":"Obleas N°29","c":"Bandejas Expandido","d":"x 600 unid.","p":40680.0},{"n":"Bandeja 103 PET c/tapa bisagra","c":"Bandejas Plásticas","d":"x unid.","p":408.0},{"n":"Bandeja alta temp. 102 bisag.","c":"Bandejas Plásticas","d":"x unid.","p":288.0},{"n":"Bandeja alta temp. 103 bisag.","c":"Bandejas Plásticas","d":"x unid.","p":324.0},{"n":"Bandeja alta temp. 105 bisag.","c":"Bandejas Plásticas","d":"x unid.","p":570.0},{"n":"Bandeja micro 101","c":"Bandejas Plásticas","d":"x 100 unid.","p":6120.0},{"n":"Bandeja micro 102","c":"Bandejas Plásticas","d":"x 100 unid.","p":6240.0},{"n":"Bandeja micro 103","c":"Bandejas Plásticas","d":"x 100 unid.","p":7920.0},{"n":"Bandeja micro 105 oval.","c":"Bandejas Plásticas","d":"x 100 unid.","p":11400.0},{"n":"Bandeja micro 105 rect. oval econ.","c":"Bandejas Plásticas","d":"x 100 unid.","p":10200.0},{"n":"Bandeja micro 105 rectangular","c":"Bandejas Plásticas","d":"x 100 unid.","p":10440.0},{"n":"Bandeja micro 107","c":"Bandejas Plásticas","d":"x unid.","p":15720.0},{"n":"Bandeja sandw. c/tapa 2060","c":"Bandejas Plásticas","d":"x unid.","p":756.0},{"n":"Bandeja sandw. c/tapa 2475","c":"Bandejas Plásticas","d":"x unid.","p":804.0},{"n":"Bandeja sandw. c/tapa 2508","c":"Bandejas Plásticas","d":"x unid.","p":1122.0},{"n":"Bandeja Z.T. 14","c":"Bandejas Plásticas","d":"x unid.","p":1518.0},{"n":"Tortera T.22","c":"Bandejas Plásticas","d":"x unid.","p":1392.0},{"n":"Tortera T.26","c":"Bandejas Plásticas","d":"x unid.","p":1716.0},{"n":"Tortera T.28","c":"Bandejas Plásticas","d":"x unid.","p":1956.0},{"n":"Bandeja rect. 1 Kg. 24x30","c":"Blondas y Servicio","d":"x unid.","p":1560.0},{"n":"Bandeja rect. 1/2 20x25","c":"Blondas y Servicio","d":"x unid.","p":816.0},{"n":"Bandeja rect. 2 Kg. 28x35","c":"Blondas y Servicio","d":"x unid.","p":2352.0},{"n":"Bandeja rect. 3 Kg. 33x39","c":"Blondas y Servicio","d":"x unid.","p":3960.0},{"n":"Bandeja rect. 5 Kg. 40x49","c":"Blondas y Servicio","d":"x unid.","p":7236.0},{"n":"Bandeja redonda 21","c":"Blondas y Servicio","d":"x unid.","p":780.0},{"n":"Bandeja redonda 24","c":"Blondas y Servicio","d":"x unid.","p":1008.0},{"n":"Bandeja redonda 27","c":"Blondas y Servicio","d":"x unid.","p":1200.0},{"n":"Bandeja redonda 30","c":"Blondas y Servicio","d":"x unid.","p":1416.0},{"n":"Bandeja redonda 33","c":"Blondas y Servicio","d":"x unid.","p":2088.0},{"n":"Bandeja redonda 36","c":"Blondas y Servicio","d":"x unid.","p":2976.0},{"n":"Bandeja redonda 39","c":"Blondas y Servicio","d":"x unid.","p":4860.0},{"n":"Blonda papel rect. 18x25cm","c":"Blondas y Servicio","d":"x 100 unid.","p":6480.0},{"n":"Blonda papel rect. 21x27cm","c":"Blondas y Servicio","d":"x 100 unid.","p":7680.0},{"n":"Blonda papel rect. 26x32cm","c":"Blondas y Servicio","d":"x 100 unid.","p":9240.0},{"n":"Blonda papel rect. 26x37cm","c":"Blondas y Servicio","d":"x 100 unid.","p":13680.0},{"n":"Blonda papel rect. 29x41cm","c":"Blondas y Servicio","d":"x 100 unid.","p":14160.0},{"n":"Blonda papel redonda 21cm","c":"Blondas y Servicio","d":"x 100 unid.","p":6960.0},{"n":"Blonda papel redonda 25cm","c":"Blondas y Servicio","d":"x 100 unid.","p":7320.0},{"n":"Blonda papel redonda 28cm","c":"Blondas y Servicio","d":"x 100 unid.","p":9000.0},{"n":"Blonda papel redonda 30cm","c":"Blondas y Servicio","d":"x 100 unid.","p":9960.0},{"n":"Blonda papel redonda 32cm","c":"Blondas y Servicio","d":"x 100 unid.","p":10320.0},{"n":"Blonda papel redonda 35cm","c":"Blondas y Servicio","d":"x 100 unid.","p":11760.0},{"n":"Bolsa de papel blanca N°1","c":"Bolsas de Papel","d":"x 100 unid.","p":1440.0},{"n":"Bolsa de papel blanca N°2","c":"Bolsas de Papel","d":"x 100 unid.","p":1740.0},{"n":"Bolsa de papel blanca N°3","c":"Bolsas de Papel","d":"x 100 unid.","p":2160.0},{"n":"Bolsa de papel blanca N°4","c":"Bolsas de Papel","d":"x 100 unid.","p":2640.0},{"n":"Bolsa de papel blanca N°5","c":"Bolsas de Papel","d":"x 100 unid.","p":3120.0},{"n":"Bolsa de papel blanca N°6","c":"Bolsas de Papel","d":"x 100 unid.","p":3600.0},{"n":"Bolsa de papel blanca N°7","c":"Bolsas de Papel","d":"x 100 unid.","p":4440.0},{"n":"Bolsa de papel blanca N°8","c":"Bolsas de Papel","d":"x 100 unid.","p":5160.0},{"n":"Bolsa kraft N°1","c":"Bolsas de Papel","d":"x 100 unid.","p":1800.0},{"n":"Bolsa kraft N°2","c":"Bolsas de Papel","d":"x 100 unid.","p":1920.0},{"n":"Bolsa kraft N°3","c":"Bolsas de Papel","d":"x 100 unid.","p":2520.0},{"n":"Bolsa kraft N°4","c":"Bolsas de Papel","d":"x 100 unid.","p":2760.0},{"n":"Bolsa kraft N°5","c":"Bolsas de Papel","d":"x 100 unid.","p":3180.0},{"n":"Bolsa kraft N°6","c":"Bolsas de Papel","d":"x 100 unid.","p":3840.0},{"n":"Bolsa kraft N°7","c":"Bolsas de Papel","d":"x 100 unid.","p":4440.0},{"n":"Bolsa kraft N°8","c":"Bolsas de Papel","d":"x 100 unid.","p":5400.0},{"n":"Bolsa delivery N°3","c":"Bolsas Delivery","d":"12.5x8x26 x 50 unid.","p":4512.0},{"n":"Bolsa delivery N°5","c":"Bolsas Delivery","d":"20x11x30 x 50 unid.","p":6468.0},{"n":"Bolsa delivery N°7","c":"Bolsas Delivery","d":"26x12.5x37.5 x 50 unid.","p":9156.0},{"n":"Bolsa delivery N°8","c":"Bolsas Delivery","d":"26x17x38 x 50 unid.","p":10044.0},{"n":"Bolsa Kraft Botella 140x80x40","c":"Bolsas Kraft","d":"x unid.","p":990.0},{"n":"Bolsa Kraft KP09 5x6x155","c":"Bolsas Kraft","d":"x unid.","p":396.0},{"n":"Bolsa Kraft KP1 120x60x195","c":"Bolsas Kraft","d":"x unid.","p":420.0},{"n":"Bolsa Kraft KP2 160x80x240","c":"Bolsas Kraft","d":"x unid.","p":438.0},{"n":"Bolsa Kraft KP3 197x90x320","c":"Bolsas Kraft","d":"x unid.","p":450.0},{"n":"Bolsa Kraft KP4 265x125x360","c":"Bolsas Kraft","d":"x unid.","p":504.0},{"n":"Bolsa Kraft KP5 300x138x410","c":"Bolsas Kraft","d":"x unid.","p":588.0},{"n":"Bolsa Kraft KP7 350x110x470","c":"Bolsas Kraft","d":"x unid.","p":672.0},{"n":"Bob. polietileno 15x20-15x25 alta dens.","c":"Bolsas Polietileno","d":"x unid.","p":4200.0},{"n":"Bob. polietileno 15x20-15x25 baja dens.","c":"Bolsas Polietileno","d":"x unid.","p":5880.0},{"n":"Bolsa duo 20x25 1.200 Kg","c":"Bolsas Polietileno","d":"x unid.","p":12000.0},{"n":"Bolsa duo 20x30 1.200 Kg","c":"Bolsas Polietileno","d":"x unid.","p":12000.0},{"n":"Bolsa duo 25x35 1.200 Kg","c":"Bolsas Polietileno","d":"x unid.","p":12000.0},{"n":"Bolsa duo 30x40 1.200 Kg","c":"Bolsas Polietileno","d":"x unid.","p":12000.0},{"n":"Bolsa duo 35x45 1.200 Kg","c":"Bolsas Polietileno","d":"x unid.","p":12000.0},{"n":"Bolsa duo 40x50 1.200 Kg","c":"Bolsas Polietileno","d":"x unid.","p":12000.0},{"n":"Bolsa duo 50x70 1.200 Kg","c":"Bolsas Polietileno","d":"x unid.","p":12000.0},{"n":"Bolsa duo 50x80 1.200 Kg","c":"Bolsas Polietileno","d":"x unid.","p":12000.0},{"n":"Bolsa Maxi 60x90 1.400 Kg","c":"Bolsas Polietileno","d":"x unid.","p":16800.0},{"n":"Emblocada 20x30","c":"Bolsas Polietileno","d":"x 1000 unid.","p":14400.0},{"n":"Emblocada 25x35","c":"Bolsas Polietileno","d":"x 1000 unid.","p":20400.0},{"n":"Emblocada 30x40","c":"Bolsas Polietileno","d":"x 1000 unid.","p":27600.0},{"n":"Emblocada 35x45","c":"Bolsas Polietileno","d":"x 1000 unid.","p":34440.0},{"n":"Emblocada 40x50","c":"Bolsas Polietileno","d":"x 1000 unid.","p":43320.0},{"n":"Super fino 20x30","c":"Bolsas Polietileno","d":"x 500 unid.","p":5400.0},{"n":"Super fino 25x35","c":"Bolsas Polietileno","d":"x 500 unid.","p":7200.0},{"n":"Super fino 30x40","c":"Bolsas Polietileno","d":"x 500 unid.","p":9240.0},{"n":"Super fino 35x45","c":"Bolsas Polietileno","d":"x 250 unid.","p":9240.0},{"n":"Super fino 40x50","c":"Bolsas Polietileno","d":"x 250 unid.","p":9240.0},{"n":"Bolsa polipropileno 10x15cm","c":"Bolsas Polipropileno","d":"x 200 unid.","p":4440.0},{"n":"Bolsa polipropileno 10x20cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":3120.0},{"n":"Bolsa polipropileno 12x15cm","c":"Bolsas Polipropileno","d":"x 200 unid.","p":5280.0},{"n":"Bolsa polipropileno 12x20cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":3360.0},{"n":"Bolsa polipropileno 15x20cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":3480.0},{"n":"Bolsa polipropileno 15x25cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":3840.0},{"n":"Bolsa polipropileno 15x35cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":4080.0},{"n":"Bolsa polipropileno 20x30cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":3600.0},{"n":"Bolsa polipropileno 25x35cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":4800.0},{"n":"Bolsa polipropileno 30x40cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":6240.0},{"n":"Bolsa polipropileno 35x45cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":7560.0},{"n":"Bolsa polipropileno 40x50cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":9960.0},{"n":"Bolsa polipropileno 6x20cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":2400.0},{"n":"Bolsa polipropileno 6x25cm","c":"Bolsas Polipropileno","d":"x 100 unid.","p":2700.0},{"n":"Bolsa polipropileno 8x15cm","c":"Bolsas Polipropileno","d":"x 200 unid.","p":3840.0},{"n":"Hojas PP 50x70cm","c":"Bolsas Polipropileno","d":"x 50 unid.","p":38160.0},{"n":"Hojas PP 50x70cm","c":"Bolsas Polipropileno","d":"x 10 unid.","p":8400.0},{"n":"Bolsa riñón 15x20","c":"Bolsas Riñón","d":"x 50 unid.","p":9240.0},{"n":"Bolsa riñón 15x25","c":"Bolsas Riñón","d":"x 50 unid.","p":9960.0},{"n":"Bolsa riñón 20x30","c":"Bolsas Riñón","d":"x 50 unid.","p":12360.0},{"n":"Bolsa riñón 25x35","c":"Bolsas Riñón","d":"x 50 unid.","p":15600.0},{"n":"Bolsa riñón 30x40","c":"Bolsas Riñón","d":"x 50 unid.","p":19680.0},{"n":"Bolsa riñón 35x45","c":"Bolsas Riñón","d":"x 50 unid.","p":25800.0},{"n":"Bolsa riñón 40x50","c":"Bolsas Riñón","d":"x 50 unid.","p":31800.0},{"n":"Bolsa riñón 50x60","c":"Bolsas Riñón","d":"x 50 unid.","p":37200.0},{"n":"Bolsa riñón 60x70","c":"Bolsas Riñón","d":"x 25 unid.","p":27000.0},{"n":"Bolsa riñón 70x90","c":"Bolsas Riñón","d":"x 25 unid.","p":28200.0},{"n":"Bolsas p/vinos","c":"Bolsas Riñón","d":"x 50 unid.","p":15060.0},{"n":"Bolsas p/vinos c/fuelle","c":"Bolsas Riñón","d":"x 50 unid.","p":17160.0},{"n":"Caja c/visor 22x18x5","c":"Cajas con Visor","d":"x unid.","p":780.0},{"n":"Caja c/visor 36x26x9","c":"Cajas con Visor","d":"x unid.","p":2376.0},{"n":"Caja c/visor micro torta 25x25x12","c":"Cajas con Visor","d":"x unid.","p":2640.0},{"n":"Caja c/visor micro torta 25x25x25","c":"Cajas con Visor","d":"x unid.","p":3240.0},{"n":"Caja desayuno c/visor 30x22x10","c":"Cajas con Visor","d":"x unid.","p":1776.0},{"n":"Caja multiuso c/visor 25x20x8","c":"Cajas con Visor","d":"x unid.","p":1320.0},{"n":"Caja de pizza gris","c":"Cajas de Pizza","d":"x 100 unid.","p":16560.0},{"n":"Caja de pizza gris 1/2","c":"Cajas de Pizza","d":"x 100 unid.","p":10560.0},{"n":"Caja de pizza micro 320x320x45","c":"Cajas de Pizza","d":"x 100 unid.","p":28200.0},{"n":"Caja de ravioles","c":"Cajas de Pizza","d":"x Kg.","p":19080.0},{"n":"Caja de ravioles","c":"Cajas de Pizza","d":"x 1/2 Kg.","p":14160.0},{"n":"Caja delib. chica 185x185x65","c":"Cajas de Pizza","d":"x 100 unid.","p":18960.0},{"n":"Caja delib. grande 250x250x60","c":"Cajas de Pizza","d":"x 100 unid.","p":27600.0},{"n":"Caja delib. intermedia 280x215x65","c":"Cajas de Pizza","d":"x 100 unid.","p":26160.0},{"n":"Caja delib. med. 250x135x60","c":"Cajas de Pizza","d":"x 100 unid.","p":19440.0},{"n":"Caja parrilla micro 250x550x45","c":"Cajas de Pizza","d":"x 50 unid.","p":21720.0},{"n":"Caja pizza micro 1/2 320x175x45","c":"Cajas de Pizza","d":"x 100 unid.","p":21480.0},{"n":"Caja pizzeta micro 285x285x45","c":"Cajas de Pizza","d":"x 100 unid.","p":27360.0},{"n":"Conos p/fritas","c":"Cajas de Pizza","d":"x 300","p":8280.0},{"n":"Fajas de cartón","c":"Cajas de Pizza","d":"x Kg.","p":3600.0},{"n":"Pancheras","c":"Cajas de Pizza","d":"x 500 gr.","p":8160.0},{"n":"Camisetas 30x40","c":"Camisetas y Residuos","d":"x 100 unid.","p":1440.0},{"n":"Camisetas 40x50 reforzada","c":"Camisetas y Residuos","d":"x 100 unid.","p":3960.0},{"n":"Camisetas 40x50 sale","c":"Camisetas y Residuos","d":"x 100 unid.","p":2160.0},{"n":"Camisetas 40x50 sale","c":"Camisetas y Residuos","d":"x 30 bolsón","p":55800.0},{"n":"Camisetas 45x60 reforzada","c":"Camisetas y Residuos","d":"x 100 unid.","p":5880.0},{"n":"Camisetas 45x60 sale","c":"Camisetas y Residuos","d":"x 100 unid.","p":3120.0},{"n":"Camisetas 50x70","c":"Camisetas y Residuos","d":"x 100 unid.","p":8160.0},{"n":"Camisetas 60x80","c":"Camisetas y Residuos","d":"x 100 unid.","p":15600.0},{"n":"Consorcio 60x90","c":"Camisetas y Residuos","d":"x 10 unid.","p":1140.0},{"n":"Consorcio 80x110 dragon","c":"Camisetas y Residuos","d":"x 10 unid.","p":3720.0},{"n":"Consorcio 80x110 poliabi","c":"Camisetas y Residuos","d":"x unid.","p":2280.0},{"n":"Consorcio 90x120 Blanco 50mic","c":"Camisetas y Residuos","d":"x 10 unid.","p":12600.0},{"n":"Consorcio 90x120 poliabi","c":"Camisetas y Residuos","d":"x unid.","p":2640.0},{"n":"Fólex Bobina 20x25","c":"Camisetas y Residuos","d":"x unid.","p":12480.0},{"n":"Folex Lámina 20x25","c":"Camisetas y Residuos","d":"x unid.","p":11160.0},{"n":"Fólex Lámina 25x37","c":"Camisetas y Residuos","d":"x unid.","p":12480.0},{"n":"Lámina Folex 16x16","c":"Camisetas y Residuos","d":"x unid.","p":13200.0},{"n":"Residuo 45x60","c":"Camisetas y Residuos","d":"x 30 unid.","p":1140.0},{"n":"Film Purity 30cm","c":"Film y Aluminio","d":"x 1000","p":44880.0},{"n":"Film Purity 38cm","c":"Film y Aluminio","d":"x 1000","p":55200.0},{"n":"Film Purity 45cm","c":"Film y Aluminio","d":"x 1000","p":65472.0},{"n":"Film Resinite 30cm","c":"Film y Aluminio","d":"x 1000","p":54120.0},{"n":"Film Resinite 38cm","c":"Film y Aluminio","d":"x 1000","p":67320.0},{"n":"Film Resinite 45cm","c":"Film y Aluminio","d":"x 1000","p":81300.0},{"n":"Repuesto film 38cm","c":"Film y Aluminio","d":"x 300 mts.","p":11880.0},{"n":"Repuesto Film eco 38x200","c":"Film y Aluminio","d":"x unid.","p":7200.0},{"n":"Rollo aluminio 30cm","c":"Film y Aluminio","d":"x 5 mts.","p":1080.0},{"n":"Rollo aluminio 40cm","c":"Film y Aluminio","d":"x 50 mts.","p":11880.0},{"n":"Rollo de film 30cm","c":"Film y Aluminio","d":"x 30 mts.","p":1080.0},{"n":"Rollo papel manteca","c":"Film y Aluminio","d":"x unid.","p":1740.0},{"n":"Rollo papel manteca 38cm","c":"Film y Aluminio","d":"x 50 mts.","p":12180.0},{"n":"Rollo stretch 10cm","c":"Film y Aluminio","d":"x unid.","p":3120.0},{"n":"\"Rollo stretch 4,1 Kg\"","c":"Film y Aluminio","d":"x unid.","p":22800.0},{"n":"\"Rollo stretch c/mango 2,1 Kg\"","c":"Film y Aluminio","d":"x unid.","p":10200.0},{"n":"Molde biscochuelo 18cm","c":"Moldes de Papel","d":"x 100 unid.","p":27120.0},{"n":"Molde biscochuelo 20cm","c":"Moldes de Papel","d":"x 100 unid.","p":27840.0},{"n":"Molde biscochuelo 22cm","c":"Moldes de Papel","d":"x 100 unid.","p":31560.0},{"n":"Molde budín imperial","c":"Moldes de Papel","d":"x 100 unid.","p":18120.0},{"n":"Molde pan dulce 1 Kg.","c":"Moldes de Papel","d":"x unid.","p":15840.0},{"n":"Molde pan dulce 500 grs.","c":"Moldes de Papel","d":"x unid.","p":13440.0},{"n":"Molde pan dulce 750 grs.","c":"Moldes de Papel","d":"x unid.","p":14880.0},{"n":"Molde rosca 18cm","c":"Moldes de Papel","d":"x 100 unid.","p":31560.0},{"n":"Molde rosca 20cm","c":"Moldes de Papel","d":"x 100 unid.","p":33120.0},{"n":"Molde rosca 22cm","c":"Moldes de Papel","d":"x 100 unid.","p":35520.0},{"n":"Bobina industrial 20x200m","c":"Papel e Higiene","d":"x unid.","p":7200.0},{"n":"Bobina industrial aluma 25x400","c":"Papel e Higiene","d":"x unid.","p":23640.0},{"n":"Bobina industrial elegante 20","c":"Papel e Higiene","d":"x 300 mts.","p":21840.0},{"n":"Bobina industrial elegante 25","c":"Papel e Higiene","d":"x 400 mts.","p":25800.0},{"n":"Bobina papel limpieza Eco 25","c":"Papel e Higiene","d":"x 400 mts.","p":10020.0},{"n":"\"Papel \"\"gracias por su compra\"\"\"","c":"Papel e Higiene","d":"x Kg.","p":4560.0},{"n":"Papel alum. Térm. 30x40","c":"Papel e Higiene","d":"100 grs.","p":4080.0},{"n":"Papel fantasía","c":"Papel e Higiene","d":"x Kg.","p":7200.0},{"n":"Papel fantasía evacuor 40cm","c":"Papel e Higiene","d":"x 200 mts.","p":39120.0},{"n":"Papel fantasía evacuor 60cm","c":"Papel e Higiene","d":"x 200 mts.","p":62400.0},{"n":"Papel fantasía panad./rot.","c":"Papel e Higiene","d":"x Kg.","p":4920.0},{"n":"Papel higiénico camp.","c":"Papel e Higiene","d":"x 350 mts. x 8 unid.","p":11640.0},{"n":"Papel mantel","c":"Papel e Higiene","d":"x Kg.","p":3240.0},{"n":"Papel mantel con guarda","c":"Papel e Higiene","d":"x Kg.","p":3600.0},{"n":"Papel metalizado 50x70","c":"Papel e Higiene","d":"x 10 unid.","p":4200.0},{"n":"Papel parafinado 100 gsm","c":"Papel e Higiene","d":"x unid.","p":2760.0},{"n":"Papel prensa","c":"Papel e Higiene","d":"x Kg.","p":3240.0},{"n":"Resma A4","c":"Papel e Higiene","d":"x 500 hojas","p":6960.0},{"n":"Rollo elegante 200 paños","c":"Papel e Higiene","d":"x unid.","p":3120.0},{"n":"Rollo elegante 200 paños","c":"Papel e Higiene","d":"x 12 unid.","p":33240.0},{"n":"Servilleta econ.","c":"Papel e Higiene","d":"x 10000 unid.","p":17280.0},{"n":"Servilletas 33x32","c":"Papel e Higiene","d":"x 1000 unid.","p":13920.0},{"n":"Servilletas c/guarda 18x18","c":"Papel e Higiene","d":"x 2000 unid.","p":9360.0},{"n":"Toallas p/dispenser 10","c":"Papel e Higiene","d":"x 250","p":11520.0},{"n":"Pirotines N°10","c":"Pirotines","d":"caja x 1000 unid.","p":26856.0},{"n":"Pirotines N°4","c":"Pirotines","d":"caja x 1000 unid.","p":7500.0},{"n":"Pirotines N°5","c":"Pirotines","d":"caja x 1000 unid.","p":9180.0},{"n":"Pirotines N°6","c":"Pirotines","d":"caja x 1000 unid.","p":10632.0},{"n":"Pirotines N°7","c":"Pirotines","d":"caja x 1000 unid.","p":12480.0},{"n":"Pirotines N°8","c":"Pirotines","d":"caja x 1000 unid.","p":15048.0},{"n":"Pirotines N°9","c":"Pirotines","d":"caja x 1000 unid.","p":15120.0},{"n":"Marmita c/tapa","c":"Potes de Telgopor","d":"x unid.","p":636.0},{"n":"Porta botella térmico","c":"Potes de Telgopor","d":"x unid.","p":2760.0},{"n":"Pote helado 1 Kg.","c":"Potes de Telgopor","d":"x unid.","p":780.0},{"n":"Pote helado 1/2","c":"Potes de Telgopor","d":"x unid.","p":480.0},{"n":"Pote helado 1/4","c":"Potes de Telgopor","d":"x unid.","p":324.0},{"n":"Conj. plato c/div. negra + tapa","c":"Potes Plásticos","d":"x unid.","p":1788.0},{"n":"Ensaladeras c/tapa econ.","c":"Potes Plásticos","d":"x 50 unid.","p":16800.0},{"n":"Ensaladeras c/tapa rect.","c":"Potes Plásticos","d":"x 50 unid.","p":35400.0},{"n":"Pote bajo black c/tapa","c":"Potes Plásticos","d":"x unid.","p":126.0},{"n":"Pote desg. alto black/tapa cristal","c":"Potes Plásticos","d":"x unid.","p":132.0},{"n":"Potes 1 Kg. c/tapa","c":"Potes Plásticos","d":"x 50 unid.","p":16560.0},{"n":"Potes 125 grs. c/tapa","c":"Potes Plásticos","d":"x 50 unid.","p":6120.0},{"n":"Potes 250 grs. c/tapa","c":"Potes Plásticos","d":"x 50 unid.","p":7080.0},{"n":"Potes 500 grs. c/tapa","c":"Potes Plásticos","d":"x 50 unid.","p":9240.0},{"n":"Potes faceteados 1140","c":"Potes Plásticos","d":"x 50 unid.","p":9000.0},{"n":"Potes faceteados 1150","c":"Potes Plásticos","d":"x 50 unid.","p":10560.0},{"n":"Potes faceteados 1170","c":"Potes Plásticos","d":"x 50 unid.","p":12600.0},{"n":"Rollo térmico 57x30mts 50x10","c":"Rollos para Máquina","d":"x unid.","p":10920.0},{"n":"Rollos químico 76x30","c":"Rollos para Máquina","d":"x 10 unid.","p":20040.0},{"n":"Rollos reg. obra 37","c":"Rollos para Máquina","d":"x 10 unid.","p":5556.0},{"n":"Rollos reg. obra 44","c":"Rollos para Máquina","d":"x 10 unid.","p":9444.0},{"n":"Rollos reg. obra 57","c":"Rollos para Máquina","d":"x 10 unid.","p":7044.0},{"n":"Rollos reg. obra 60","c":"Rollos para Máquina","d":"x 10 unid.","p":7620.0},{"n":"Rollos reg. obra 76x50mts","c":"Rollos para Máquina","d":"x 10 unid.","p":14352.0},{"n":"Rollos térmico 44mm","c":"Rollos para Máquina","d":"x 10 unid.","p":19284.0},{"n":"Rollos térmico 57x20mts","c":"Rollos para Máquina","d":"x 10 unid.","p":9840.0},{"n":"Rollos térmico 80x30mts","c":"Rollos para Máquina","d":"x 10 unid.","p":18600.0},{"n":"Rollos térmico 80x45mts","c":"Rollos para Máquina","d":"x 10 unid.","p":21792.0},{"n":"Rollos térmicos 37mm","c":"Rollos para Máquina","d":"x 10 unid.","p":15732.0},{"n":"Cuchara Sundae","c":"Utensillos y Platos","d":"x 100 unid.","p":2400.0},{"n":"Platos 17cm","c":"Utensillos y Platos","d":"x 100 unid.","p":4680.0},{"n":"Platos 22cm","c":"Utensillos y Platos","d":"x 100 unid.","p":7080.0},{"n":"Tenedor y cuchillo","c":"Utensillos y Platos","d":"x 100 unid.","p":2880.0},{"n":"Bandas elásticas","c":"Varios / Descartables","d":"x 1 Kg.","p":10560.0},{"n":"Bandas elásticas 40","c":"Varios / Descartables","d":"x 100 grs.","p":1440.0},{"n":"Bengalas","c":"Varios / Descartables","d":"x 4 unid.","p":1920.0},{"n":"Bolsas p/horno","c":"Varios / Descartables","d":"x 10 unid.","p":2040.0},{"n":"Bolsas pan dulce 1 Kg","c":"Varios / Descartables","d":"x 100 unid.","p":2580.0},{"n":"Bolsas pan dulce 1/2","c":"Varios / Descartables","d":"x 100 unid.","p":1980.0},{"n":"Cinta de regalo 10","c":"Varios / Descartables","d":"x 500 mts.","p":10920.0},{"n":"Cinta de regalo 5","c":"Varios / Descartables","d":"x 1000 mts.","p":11400.0},{"n":"Cinta Scotch 24x50","c":"Varios / Descartables","d":"x unid.","p":1080.0},{"n":"Cinta Scotch 48x90","c":"Varios / Descartables","d":"x unid.","p":3096.0},{"n":"Escarbadientes","c":"Varios / Descartables","d":"x 12 unidades x 12 unid.","p":5880.0},{"n":"Escarbadientes","c":"Varios / Descartables","d":"x 3500 unidades","p":9840.0},{"n":"Escarbadientes","c":"Varios / Descartables","d":"x 5000 unidades","p":19566.0},{"n":"Escarbadientes","c":"Varios / Descartables","d":"x 500 unidades","p":5880.0},{"n":"Escarbadientes ensobrados","c":"Varios / Descartables","d":"x 800 unidades","p":6600.0},{"n":"Espaditas","c":"Varios / Descartables","d":"x 1000 unid.","p":7320.0},{"n":"Etiquetador Motex","c":"Varios / Descartables","d":"x unid.","p":2040.0},{"n":"Globos feliz cumple","c":"Varios / Descartables","d":"x 50 unid.","p":4140.0},{"n":"Globos surtidos","c":"Varios / Descartables","d":"x 50 unid.","p":4200.0},{"n":"Guantes Latex","c":"Varios / Descartables","d":"x 100 unidades","p":9000.0},{"n":"Guantes manopla","c":"Varios / Descartables","d":"x unid.","p":1440.0},{"n":"Guantes nitrilo negro","c":"Varios / Descartables","d":"x 100 unidades","p":10800.0},{"n":"Guantes nitrilo XL","c":"Varios / Descartables","d":"x 100 unid.","p":11400.0},{"n":"Hilo de Algodón","c":"Varios / Descartables","d":"x 300 grs.","p":2940.0},{"n":"Hilo de chorizo","c":"Varios / Descartables","d":"x 500 grs.","p":3060.0},{"n":"Manteles individuales","c":"Varios / Descartables","d":"x 200 unid.","p":3240.0},{"n":"Moños fácil grandes","c":"Varios / Descartables","d":"x 50 unid.","p":6480.0},{"n":"Moños fácil mediano","c":"Varios / Descartables","d":"x 50 unid.","p":5760.0},{"n":"Moños fácil mini","c":"Varios / Descartables","d":"x 100 unid.","p":4200.0},{"n":"Palitos brochet 15cm","c":"Varios / Descartables","d":"x 90 unid.","p":1140.0},{"n":"Palitos brochet 25cm","c":"Varios / Descartables","d":"x 90 unid.","p":1320.0},{"n":"Palitos gastronómico 10cm","c":"Varios / Descartables","d":"x 100 unidades","p":2520.0},{"n":"Palitos gastronómicos 15cm","c":"Varios / Descartables","d":"x 100 unid.","p":3096.0},{"n":"Precintos plásticos","c":"Varios / Descartables","d":"x unid.","p":2640.0},{"n":"Removedor cuchara p/café","c":"Varios / Descartables","d":"x 500 unid.","p":6192.0},{"n":"Removedores de café","c":"Varios / Descartables","d":"x 1000 unid.","p":7068.0},{"n":"Removedores trago largo","c":"Varios / Descartables","d":"x 100 unid.","p":5700.0},{"n":"Rollo Etiquetador Motex","c":"Varios / Descartables","d":"x unid.","p":720.0},{"n":"Rollo Etiquetador Motex fluor","c":"Varios / Descartables","d":"x unid.","p":840.0},{"n":"Rollo Moba","c":"Varios / Descartables","d":"x 1 unid.","p":2280.0},{"n":"Sorbetes negros","c":"Varios / Descartables","d":"x 100 unid.","p":960.0},{"n":"Sorbetes negros","c":"Varios / Descartables","d":"x caja","p":7080.0},{"n":"Sorbetes Sur (bolsas)","c":"Varios / Descartables","d":"x 1000 unid.","p":6012.0},{"n":"Talonarios remito chico","c":"Varios / Descartables","d":"x unid.","p":1440.0},{"n":"Tridentes","c":"Varios / Descartables","d":"x Kg.","p":3360.0},{"n":"Tapa vaso térmico 120cc","c":"Vasos Descartables","d":"x 100 unid.","p":6120.0},{"n":"Tapa vaso térmico 180cc","c":"Vasos Descartables","d":"x 100 unid.","p":6960.0},{"n":"Tapa vaso térmico 240cc","c":"Vasos Descartables","d":"x 100 unid.","p":7440.0},{"n":"Tapa vaso térmico 300cc","c":"Vasos Descartables","d":"x 100 unid.","p":8040.0},{"n":"Vaso trago largo","c":"Vasos Descartables","d":"x unid.","p":198.0},{"n":"Vasos 1000cc","c":"Vasos Descartables","d":"x 100 unid.","p":21000.0},{"n":"Vasos 110cc","c":"Vasos Descartables","d":"x 100 unid.","p":4200.0},{"n":"Vasos 180cc","c":"Vasos Descartables","d":"x 100 unid.","p":4560.0},{"n":"Vasos 220cc","c":"Vasos Descartables","d":"x 100 unid.","p":5160.0},{"n":"Vasos 300cc","c":"Vasos Descartables","d":"x 100 unid.","p":5520.0},{"n":"Vasos 330cc","c":"Vasos Descartables","d":"x 100 unid.","p":6000.0},{"n":"Vasos 500cc","c":"Vasos Descartables","d":"x 100 unid.","p":10920.0},{"n":"Vasos 800cc","c":"Vasos Descartables","d":"x 100 unid.","p":17040.0},{"n":"Vasos térmicos 120cc","c":"Vasos Descartables","d":"x 100 unid.","p":7560.0},{"n":"Vasos térmicos 180cc","c":"Vasos Descartables","d":"x 100 unid.","p":9600.0},{"n":"Vasos térmicos 240cc","c":"Vasos Descartables","d":"x 100 unid.","p":11160.0},{"n":"Vasos térmicos 300cc","c":"Vasos Descartables","d":"x 100 unid.","p":12360.0}];
+
+async function cargarDesdeSheet() {
+  // Intentar cargar desde Google Sheet (funciona en producción/Netlify)
+  try {
+    const proxies = [
+      GSHEET_URL,
+      'https://corsproxy.io/?' + GSHEET_URL,
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent(GSHEET_URL),
+    ];
+    for (const url of proxies) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const buf = await res.arrayBuffer();
+          const text = new TextDecoder('utf-8').decode(buf);
+          const parsed = parseCSV(text);
+          if (parsed.length > 0) return parsed;
+        }
+      } catch(e) {}
+    }
+  } catch(e) {}
+  // Fallback: usar datos embebidos
+  return PRODUCTOS_DATA.map(p => ({nombre:p.n, cat:p.c, detalle:p.d, precio:p.p}));
+}
+
+
+const CAT_ICONS = {
+  'Accesorios':'🪣','Bandejas de Aluminio':'🥘','Bandejas de Cartón':'📦',
+  'Bandejas Doradas':'✨','Bandejas Expandido':'🧱','Bandejas Plásticas':'🥡',
+  'Blondas y Servicio':'🎀','Bolsas de Papel':'🛍️','Bolsas Delivery':'🚚',
+  'Bolsas Kraft':'🟫','Bolsas Polietileno':'🛒','Bolsas Polipropileno':'💼',
+  'Bolsas Riñón':'👜','Cajas con Visor':'🎂','Cajas de Pizza':'🍕',
+  'Camisetas y Residuos':'♻️','Film y Aluminio':'🎞️','Moldes de Papel':'🍰',
+  'Papel e Higiene':'🧻','Pirotines':'🧁','Potes de Telgopor':'🧊',
+  'Potes Plásticos':'🥤','Rollos para Máquina':'🖨️','Utensillos y Platos':'🍽️',
+  'Varios / Descartables':'🛒','Vasos Descartables':'🥛',
+  '1 Kg':'⚖️','5 Kg':'⚖️'
+};
+
+// Parse CSV
+function parseCSV(text) {
+  const lines = text.trim().split('\n').slice(1);
+  return lines.map(line => {
+    const parts = line.split(',');
+    return { nombre: parts[0], cat: parts[1], detalle: parts[2], precio: parseInt(parts[3]) };
+  }).filter(p => p.nombre && !isNaN(p.precio));
+}
+
+
+let productos = [];
+let cats = [];
+let catActual = null;
+let carrito = [];
+let entregaMode = 'envio';
+let modalMode = '';
+
+// Render categorías
+function renderCats(filtro = '') {
+  const grid = document.getElementById('cats-grid');
+  let lista = cats;
+  if (filtro) {
+    const prods = productos.filter(p => p.nombre.toLowerCase().includes(filtro.toLowerCase()) || p.cat.toLowerCase().includes(filtro.toLowerCase()));
+    lista = [...new Set(prods.map(p => p.cat))];
+  }
+  grid.innerHTML = lista.map(c => {
+    const cnt = productos.filter(p => p.cat === c).length;
+    return `<div class="cat-card" onclick="verCat('${c}')">
+      <span class="cat-icon">${CAT_ICONS[c] || '📦'}</span>
+      ${c}
+      <div class="cat-count">${cnt} productos</div>
+    </div>`;
+  }).join('');
+}
+
+function verCat(cat) {
+  catActual = cat;
+  document.getElementById('vista-cats').style.display = 'none';
+  document.getElementById('vista-prods').style.display = 'block';
+  document.getElementById('prod-titulo').textContent = `${CAT_ICONS[cat] || '📦'} ${cat}`;
+  renderProds(cat);
+}
+
+function volverCats() {
+  document.getElementById('vista-cats').style.display = 'block';
+  document.getElementById('vista-prods').style.display = 'none';
+  catActual = null;
+  document.getElementById('buscador').value = '';
+}
+
+function renderProds(cat) {
+  const prods = productos.filter(p => p.cat === cat);
+  document.getElementById('prod-count').textContent = `${prods.length} productos`;
+  document.getElementById('prods-grid').innerHTML = prods.map((p, i) => `
+    <div class="prod-card">
+      <div class="prod-nombre">${p.nombre}</div>
+      <div class="prod-detalle">${p.detalle}</div>
+      <div class="prod-footer">
+        <div class="prod-precio">$${p.precio.toLocaleString('es-AR')}</div>
+        <button class="add-btn" onclick="agregarAlCarrito(${productos.indexOf(p)})">+ Agregar</button>
+      </div>
+    </div>`).join('');
+}
+
+function filtrar() {
+  const q = document.getElementById('buscador').value.trim();
+  if (!q) {
+    document.getElementById('vista-cats').style.display = 'block';
+    document.getElementById('vista-prods').style.display = 'none';
+    renderCats();
+    return;
+  }
+  const res = productos.filter(p => p.nombre.toLowerCase().includes(q.toLowerCase()) || p.cat.toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('vista-cats').style.display = 'none';
+  document.getElementById('vista-prods').style.display = 'block';
+  document.getElementById('prod-titulo').textContent = `🔍 Resultados para "${q}"`;
+  document.getElementById('prod-count').textContent = `${res.length} productos`;
+  document.getElementById('prods-grid').innerHTML = res.map(p => `
+    <div class="prod-card">
+      <div class="prod-nombre">${p.nombre}</div>
+      <div class="prod-detalle">${p.detalle}</div>
+      <div class="prod-cat-tag">${p.cat}</div>
+      <div class="prod-footer">
+        <div class="prod-precio">$${p.precio.toLocaleString('es-AR')}</div>
+        <button class="add-btn" onclick="agregarAlCarrito(${productos.indexOf(p)})">+ Agregar</button>
+      </div>
+    </div>`).join('');
+}
+
+// CARRITO
+function agregarAlCarrito(idx) {
+  const prod = productos[idx];
+  const exist = carrito.find(i => i.idx === idx);
+  if (exist) exist.qty++;
+  else carrito.push({ idx, nombre: prod.nombre, detalle: prod.detalle, precio: prod.precio, qty: 1 });
+  actualizarCarrito();
+  showToast(`✓ ${prod.nombre} agregado`);
+}
+
+function cambiarQty(idx, delta) {
+  const item = carrito.find(i => i.idx === idx);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) carrito = carrito.filter(i => i.idx !== idx);
+  actualizarCarrito();
+}
+
+function eliminarItem(idx) {
+  carrito = carrito.filter(i => i.idx !== idx);
+  actualizarCarrito();
+}
+
+function actualizarCarrito() {
+  const total = carrito.reduce((s, i) => s + i.precio * i.qty, 0);
+  const totalItems = carrito.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('badge').textContent = totalItems;
+  document.getElementById('total-amount').textContent = '$' + total.toLocaleString('es-AR');
+
+  const body = document.getElementById('panel-body');
+  if (carrito.length === 0) {
+    body.innerHTML = `<div class="empty-cart"><div class="empty-icon">🛍️</div><p>Tu carrito está vacío.<br>Agregá productos desde las categorías.</p></div>`;
+    return;
+  }
+  body.innerHTML = carrito.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <div class="cart-item-nombre">${item.nombre}</div>
+        <div class="cart-item-detalle">${item.detalle}</div>
+        <div class="cart-item-precio">$${(item.precio * item.qty).toLocaleString('es-AR')}</div>
+      </div>
+      <div class="cart-item-controls">
+        <button class="qty-btn" onclick="cambiarQty(${item.idx}, -1)">−</button>
+        <span class="qty-num">${item.qty}</span>
+        <button class="qty-btn" onclick="cambiarQty(${item.idx}, 1)">+</button>
+        <button class="del-btn" onclick="eliminarItem(${item.idx})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function toggleCarrito() {
+  document.getElementById('carrito-panel').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+
+function setEntrega(modo) {
+  entregaMode = modo;
+  document.getElementById('btn-envio').classList.toggle('active', modo === 'envio');
+  document.getElementById('btn-retiro').classList.toggle('active', modo === 'retiro');
+  document.getElementById('campos-envio').style.display = modo === 'envio' ? 'block' : 'none';
+  document.getElementById('campos-retiro').style.display = modo === 'retiro' ? 'block' : 'none';
+}
+
+// GENERAR TEXTO PEDIDO
+
+function armarDatosPedido() {
+  const nombre   = document.getElementById('f-nombre').value.trim();
+  const tel      = document.getElementById('f-tel').value.trim();
+  const pago     = document.querySelector('input[name="pago"]:checked').value;
+  const notas    = document.getElementById('f-notas').value.trim();
+  const total    = carrito.reduce((s, i) => s + i.precio * i.qty, 0);
+  let direccion  = '';
+  if (entregaMode === 'envio') {
+    const calle  = document.getElementById('f-calle').value.trim();
+    const barrio = document.getElementById('f-barrio').value.trim();
+    direccion = `${calle}, ${barrio}`;
+  }
+  const detalle = carrito.map(i =>
+    `${i.nombre} (${i.detalle}) x${i.qty} = $${(i.precio * i.qty).toLocaleString('es-AR')}`
+  ).join(' | ');
+
+  return { nombre, telefono: tel, pago, entrega: entregaMode === 'envio' ? 'Envío' : 'Retiro',
+           direccion, total, detalle, notas };
+}
+
+async function registrarPedido(dataPedido) {
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataPedido)
+    });
+  } catch(e) {
+    console.warn('No se pudo registrar el pedido:', e);
+  }
+}
+
+function generarTexto() {
+  const nombre = document.getElementById('f-nombre').value.trim();
+  const tel = document.getElementById('f-tel').value.trim();
+  const pago = document.querySelector('input[name="pago"]:checked').value;
+  const notas = document.getElementById('f-notas').value.trim();
+  const total = carrito.reduce((s, i) => s + i.precio * i.qty, 0);
+
+  let entrega = '';
+  if (entregaMode === 'envio') {
+    const calle = document.getElementById('f-calle').value.trim();
+    const barrio = document.getElementById('f-barrio').value.trim();
+    entrega = `📦 Envío a: ${calle}, ${barrio}`;
+  } else {
+    const dia = document.getElementById('f-dia').value;
+    const horario = document.getElementById('f-horario').value;
+    entrega = `🏪 Retiro en local — ${dia} ${horario}`;
+  }
+
+  let txt = `🛒 *PEDIDO - PAPELERA RB*\n`;
+  txt += `📅 ${new Date().toLocaleDateString('es-AR')}\n\n`;
+  txt += `👤 *Cliente:* ${nombre || '(sin nombre)'}\n`;
+  txt += `📞 *Tel:* ${tel || '(sin teléfono)'}\n`;
+  txt += `💳 *Pago:* ${pago}\n`;
+  txt += `${entrega}\n\n`;
+  txt += `*PRODUCTOS:*\n`;
+  carrito.forEach(i => {
+    txt += `• ${i.nombre} (${i.detalle}) x${i.qty} = $${(i.precio * i.qty).toLocaleString('es-AR')}\n`;
+  });
+  txt += `\n💰 *TOTAL: $${total.toLocaleString('es-AR')}*`;
+  if (notas) txt += `\n\n📝 Notas: ${notas}`;
+  return txt;
+}
+
+function abrirModal(mode) {
+  if (carrito.length === 0) { showToast('⚠️ El carrito está vacío'); return; }
+  modalMode = mode;
+  const txt = generarTexto();
+  document.getElementById('modal-preview').textContent = txt;
+
+  const btns = document.getElementById('modal-btns');
+  if (mode === 'wsp') {
+    btns.innerHTML = `
+      <button class="modal-btn btn-wsp2" onclick="enviarWsp()">💬 Abrir WhatsApp</button>
+      <button class="modal-btn btn-copy" onclick="copiarTexto()">📋 Copiar texto</button>
+      <button class="modal-btn btn-cancel" onclick="cerrarModal()">Cancelar</button>`;
+  } else {
+    btns.innerHTML = `
+      <button class="modal-btn btn-email2" onclick="enviarEmail()">📧 Abrir email</button>
+      <button class="modal-btn btn-copy" onclick="copiarTexto()">📋 Copiar texto</button>
+      <button class="modal-btn btn-cancel" onclick="cerrarModal()">Cancelar</button>`;
+  }
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function cerrarModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+async function enviarWsp() {
+  const txt = generarTexto();
+  const data = armarDatosPedido();
+  await registrarPedido(data);
+  const encoded = encodeURIComponent(txt);
+  window.open(`https://wa.me/5493476609867?text=${encoded}`, '_blank');
+  cerrarModal();
+}
+
+async function enviarEmail() {
+  const txt = generarTexto();
+  const data = armarDatosPedido();
+  await registrarPedido(data);
+  const asunto = encodeURIComponent('Pedido Papelera RB');
+  const cuerpo = encodeURIComponent(txt);
+  const emails = 'pablo44_286@hotmail.com,barbarababya29@gmail.com';
+  window.open(`mailto:${emails}?subject=${asunto}&body=${cuerpo}`, '_blank');
+  cerrarModal();
+}
+
+function copiarTexto() {
+  const txt = generarTexto();
+  navigator.clipboard.writeText(txt).then(() => {
+    showToast('✓ Texto copiado');
+    cerrarModal();
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// INIT
+async function init() {
+  document.getElementById('cats-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--gris);">⏳ Cargando lista de precios...</div>';
+  try {
+    productos = await cargarDesdeSheet();
+    cats = [...new Set(productos.map(p => p.cat))].sort();
+    renderCats();
+  } catch(e) {
+    document.getElementById('cats-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:#ef4444;">⚠️ No se pudo cargar la lista de precios. Revisá la conexión e intentá de nuevo.<br><br><button onclick="init()" style="padding:10px 20px;background:var(--verde);color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">🔄 Reintentar</button></div>';
+  }
+}
+init();
+</script>
+</body>
+</html>
