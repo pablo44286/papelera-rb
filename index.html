@@ -768,8 +768,15 @@ function armarDatosPedido() {
     `${i.nombre} (${i.detalle}) x${i.qty} = $${(i.precio * i.qty).toLocaleString('es-AR')}`
   ).join(' | ');
 
+  // Items para hoja proveedor
+  const items = carrito.map(i => ({
+    nombre: i.nombre,
+    detalle: i.detalle,
+    qty: i.qty
+  }));
+
   return { nombre, telefono: tel, pago, entrega: entregaMode === 'envio' ? 'Envío' : 'Retiro',
-           direccion, total, detalle, notas };
+           direccion, total, detalle, notas, items };
 }
 
 async function registrarPedido(dataPedido) {
@@ -785,24 +792,6 @@ async function registrarPedido(dataPedido) {
   }
 }
 
-async function registrarProveedor(nroPedido) {
-  try {
-    const items = carrito.map(i => ({
-      nombre: i.nombre,
-      detalle: i.detalle,
-      qty: i.qty,
-      unidad: 'unid.'
-    }));
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tipo: 'proveedor', nroPedido, items })
-    });
-  } catch(e) {
-    console.warn('No se pudo registrar en proveedor:', e);
-  }
-}
 
 function generarTexto() {
   const nombre = document.getElementById('f-nombre').value.trim();
@@ -864,7 +853,6 @@ async function enviarWsp() {
   const txt = generarTexto();
   const data = armarDatosPedido();
   await registrarPedido(data);
-  await registrarProveedor(data.nroPedido || '');
   const encoded = encodeURIComponent(txt);
   window.open(`https://wa.me/5493476609867?text=${encoded}`, '_blank');
   cerrarModal();
@@ -874,7 +862,6 @@ async function enviarEmail() {
   const txt = generarTexto();
   const data = armarDatosPedido();
   await registrarPedido(data);
-  await registrarProveedor(data.nroPedido || '');
   const asunto = encodeURIComponent('Pedido Papelera RB');
   const cuerpo = encodeURIComponent(txt);
   const emails = 'pablo44_286@hotmail.com,barbarababya29@gmail.com';
