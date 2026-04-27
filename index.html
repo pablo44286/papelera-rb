@@ -165,6 +165,12 @@
   }
   .prod-footer { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 4px; width: 100%; }
   .prod-precio { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 700; color: var(--verde); }
+
+  .qty-inline { display: flex; align-items: center; gap: 4px; width: 100%; justify-content: center; }
+  .qty-inline-btn { background: var(--verde); color: white; border: none; border-radius: 6px; width: 28px; height: 28px; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+  .qty-inline-btn:hover { background: var(--naranja); }
+  .qty-inline-num { font-size: 0.95rem; font-weight: 700; color: var(--verde); min-width: 20px; text-align: center; }
+
   .add-btn {
     background: var(--verde);
     color: white;
@@ -311,23 +317,6 @@
     transition: all 0.2s;
   }
   .btn-wsp:hover { background: #1ebe5d; }
-  .btn-email {
-    background: var(--verde);
-    color: white;
-    border: none;
-    padding: 13px;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all 0.2s;
-  }
-  .btn-email:hover { background: #0C447C; }
 
   /* MODAL CONFIRMACION */
   .modal-overlay {
@@ -383,8 +372,6 @@
   .btn-wsp2:hover { background: #1ebe5d; }
   .btn-copy { background: var(--verde-pale); color: var(--verde); }
   .btn-copy:hover { background: var(--verde); color: white; }
-  .btn-email2 { background: var(--verde); color: white; }
-  .btn-email2:hover { background: #0C447C; }
   .btn-cancel { background: var(--borde); color: var(--gris); }
   .btn-cancel:hover { background: #d1d5db; }
 
@@ -537,7 +524,6 @@
 
   <div class="send-btns">
     <button class="btn-wsp" onclick="abrirModal('wsp')">💬 Enviar por WhatsApp</button>
-    <button class="btn-email" onclick="abrirModal('email')">📧 Enviar por Email</button>
   </div>
 </div>
 
@@ -648,16 +634,36 @@ function volverCats() {
   document.getElementById('buscador').value = '';
 }
 
+function getQtyCtrl(idx) {
+  const item = carrito.find(i => i.idx === idx);
+  const qty = item ? item.qty : 0;
+  if (qty === 0) {
+    return `<button class="add-btn" onclick="agregarAlCarrito(${idx})">+ Agregar</button>`;
+  }
+  return `<div class="qty-inline"><button class="qty-inline-btn" onclick="qtyInline(${idx},-1)">−</button><span class="qty-inline-num">${qty}</span><button class="qty-inline-btn" onclick="qtyInline(${idx},1)">+</button></div>`;
+}
+
+function qtyInline(idx, delta) {
+  const item = carrito.find(i => i.idx === idx);
+  if (!item && delta > 0) { agregarAlCarrito(idx); return; }
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) carrito = carrito.filter(i => i.idx !== idx);
+  actualizarCarrito();
+  const ctrl = document.getElementById('ctrl-' + idx);
+  if (ctrl) ctrl.innerHTML = getQtyCtrl(idx);
+}
+
 function renderProds(cat) {
   const prods = productos.filter(p => p.cat === cat);
   document.getElementById('prod-count').textContent = `${prods.length} productos`;
   document.getElementById('prods-grid').innerHTML = prods.map((p, i) => `
-    <div class="prod-card">
+    <div class="prod-card" id="card-${productos.indexOf(p)}">
       <div class="prod-nombre">${p.nombre}</div>
       <div class="prod-detalle">${p.detalle}</div>
       <div class="prod-footer">
         <div class="prod-precio">$${p.precio.toLocaleString('es-AR')}</div>
-        <button class="add-btn" onclick="agregarAlCarrito(${productos.indexOf(p)})">+ Agregar</button>
+        <div class="prod-qty-ctrl" id="ctrl-${productos.indexOf(p)}">${getQtyCtrl(productos.indexOf(p))}</div>
       </div>
     </div>`).join('');
 }
@@ -676,13 +682,13 @@ function filtrar() {
   document.getElementById('prod-titulo').textContent = `🔍 Resultados para "${q}"`;
   document.getElementById('prod-count').textContent = `${res.length} productos`;
   document.getElementById('prods-grid').innerHTML = res.map(p => `
-    <div class="prod-card">
+    <div class="prod-card" id="card-${productos.indexOf(p)}">
       <div class="prod-nombre">${p.nombre}</div>
       <div class="prod-detalle">${p.detalle}</div>
       <div class="prod-cat-tag">${p.cat}</div>
       <div class="prod-footer">
         <div class="prod-precio">$${p.precio.toLocaleString('es-AR')}</div>
-        <button class="add-btn" onclick="agregarAlCarrito(${productos.indexOf(p)})">+ Agregar</button>
+        <div class="prod-qty-ctrl" id="ctrl-${productos.indexOf(p)}">${getQtyCtrl(productos.indexOf(p))}</div>
       </div>
     </div>`).join('');
 }
@@ -694,6 +700,8 @@ function agregarAlCarrito(idx) {
   if (exist) exist.qty++;
   else carrito.push({ idx, nombre: prod.nombre, detalle: prod.detalle, precio: prod.precio, qty: 1 });
   actualizarCarrito();
+  const ctrl = document.getElementById('ctrl-' + idx);
+  if (ctrl) ctrl.innerHTML = getQtyCtrl(idx);
   showToast(`✓ ${prod.nombre} agregado`);
 }
 
@@ -703,11 +711,15 @@ function cambiarQty(idx, delta) {
   item.qty += delta;
   if (item.qty <= 0) carrito = carrito.filter(i => i.idx !== idx);
   actualizarCarrito();
+  const ctrl = document.getElementById('ctrl-' + idx);
+  if (ctrl) ctrl.innerHTML = getQtyCtrl(idx);
 }
 
 function eliminarItem(idx) {
   carrito = carrito.filter(i => i.idx !== idx);
   actualizarCarrito();
+  const ctrl = document.getElementById('ctrl-' + idx);
+  if (ctrl) ctrl.innerHTML = getQtyCtrl(idx);
 }
 
 function actualizarCarrito() {
@@ -781,12 +793,10 @@ function armarDatosPedido() {
 
 async function registrarPedido(dataPedido) {
   try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dataPedido)
-    });
+    // Usar GET con datos codificados en URL para evitar CORS con Apps Script
+    const params = encodeURIComponent(JSON.stringify(dataPedido));
+    const url = APPS_SCRIPT_URL + '?data=' + params;
+    await fetch(url, { method: 'GET', mode: 'no-cors' });
   } catch(e) {
     console.warn('No se pudo registrar el pedido:', e);
   }
@@ -811,8 +821,12 @@ function generarTexto() {
     entrega = `🏪 Retiro en local — ${dia} ${horario}`;
   }
 
+  const now = new Date();
+  const padZ = n => String(n).padStart(2,'0');
+  const nroPedido = 'P-' + now.getFullYear() + padZ(now.getMonth()+1) + padZ(now.getDate()) + '-' + padZ(now.getHours()) + padZ(now.getMinutes());
   let txt = `🛒 *PEDIDO - PAPELERA RB*\n`;
-  txt += `📅 ${new Date().toLocaleDateString('es-AR')}\n\n`;
+  txt += `🔖 *N° Pedido: ${nroPedido}*\n`;
+  txt += `📅 ${now.toLocaleDateString('es-AR')}\n\n`;
   txt += `👤 *Cliente:* ${nombre || '(sin nombre)'}\n`;
   txt += `📞 *Tel:* ${tel || '(sin teléfono)'}\n`;
   txt += `💳 *Pago:* ${pago}\n`;
@@ -840,7 +854,6 @@ function abrirModal(mode) {
       <button class="modal-btn btn-cancel" onclick="cerrarModal()">Cancelar</button>`;
   } else {
     btns.innerHTML = `
-      <button class="modal-btn btn-email2" onclick="enviarEmail()">📧 Abrir email</button>
       <button class="modal-btn btn-copy" onclick="copiarTexto()">📋 Copiar texto</button>
       <button class="modal-btn btn-cancel" onclick="cerrarModal()">Cancelar</button>`;
   }
@@ -857,15 +870,7 @@ async function enviarWsp() {
   window.open(`https://wa.me/5493476609867?text=${encoded}`, '_blank');
   cerrarModal();
 }
-
-async function enviarEmail() {
-  const txt = generarTexto();
-  const data = armarDatosPedido();
-  await registrarPedido(data);
-  const asunto = encodeURIComponent('Pedido Papelera RB');
-  const cuerpo = encodeURIComponent(txt);
-  const emails = 'pablo44_286@hotmail.com,barbarababya29@gmail.com';
-  window.open(`mailto:${emails}?subject=${asunto}&body=${cuerpo}`, '_blank');
+?subject=${asunto}&body=${cuerpo}`, '_blank');
   cerrarModal();
 }
 
