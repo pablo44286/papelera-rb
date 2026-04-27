@@ -207,10 +207,20 @@
     flex-direction: column;
     box-shadow: -8px 0 40px rgba(0,0,0,0.12);
     overflow: hidden;
-    height: 100%;
     height: 100dvh;
   }
   .carrito-panel.open { transform: translateX(0); }
+  .panel-scroll {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    min-height: 0;
+  }
+  .panel-footer-fijo {
+    flex-shrink: 0;
+    background: white;
+    border-top: 1px solid var(--borde);
+  }
   .panel-header {
     background: var(--verde);
     color: white;
@@ -221,7 +231,7 @@
   }
   .panel-header h2 { font-family: 'Fraunces', serif; font-size: 1.2rem; }
   .close-btn { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; line-height: 1; }
-  .panel-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; min-height: 0; }
+  .panel-body { padding: 16px; }
   .empty-cart { text-align: center; padding: 40px 20px; color: var(--gris); }
   .empty-cart .empty-icon { font-size: 3rem; margin-bottom: 12px; }
 
@@ -256,7 +266,7 @@
   .del-btn { background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1rem; padding: 4px; }
 
   /* FORMULARIO */
-  .form-section { padding: 16px; border-top: 2px solid var(--verde-pale); flex-shrink: 0; }
+  .form-section { padding: 16px; border-top: 1px solid var(--borde); }
   .form-section h3 { font-family: 'Fraunces', serif; font-size: 1rem; color: var(--verde); margin-bottom: 12px; }
   .form-group { margin-bottom: 10px; }
   .form-group label { font-size: 0.78rem; font-weight: 600; color: var(--gris); display: block; margin-bottom: 4px; }
@@ -291,7 +301,7 @@
   .entrega-btn.active { border-color: var(--verde); background: var(--verde-pale); color: var(--verde); }
 
   /* TOTAL Y BOTONES */
-  .total-bar { flex-shrink: 0;
+  .total-bar {
     padding: 14px 16px;
     background: var(--verde-pale);
     border-top: 1px solid #B5D4F4;
@@ -299,7 +309,7 @@
   .total-row { display: flex; justify-content: space-between; align-items: center; }
   .total-label { font-size: 0.85rem; color: var(--gris); }
   .total-amount { font-family: 'Fraunces', serif; font-size: 1.4rem; font-weight: 900; color: var(--verde); }
-  .send-btns { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px 20px; flex-shrink: 0; }
+  .send-btns { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px 20px; }
   .btn-wsp {
     background: #25d366;
     color: white;
@@ -450,6 +460,7 @@
     <h2>🛒 Tu pedido</h2>
     <button class="close-btn" onclick="toggleCarrito()">✕</button>
   </div>
+  <div class="panel-scroll">
   <div class="panel-body" id="panel-body">
     <div class="empty-cart">
       <div class="empty-icon">🛍️</div>
@@ -514,6 +525,8 @@
     </div>
   </div>
 
+  </div><!-- /panel-scroll -->
+  <div class="panel-footer-fijo">
   <div class="total-bar">
     <div class="total-row">
       <span class="total-label">Total estimado</span>
@@ -525,6 +538,7 @@
   <div class="send-btns">
     <button class="btn-wsp" onclick="abrirModal('wsp')">💬 Enviar por WhatsApp</button>
   </div>
+  </div><!-- /panel-footer-fijo -->
 </div>
 
 <!-- MODAL -->
@@ -840,8 +854,23 @@ function generarTexto() {
   return txt;
 }
 
+function validarCampos() {
+  const nombre = document.getElementById('f-nombre').value.trim();
+  const tel    = document.getElementById('f-tel').value.trim();
+  if (!nombre) { showToast('⚠️ Ingresá tu nombre y apellido'); document.getElementById('f-nombre').focus(); return false; }
+  if (!tel)    { showToast('⚠️ Ingresá tu teléfono'); document.getElementById('f-tel').focus(); return false; }
+  if (entregaMode === 'envio') {
+    const calle  = document.getElementById('f-calle').value.trim();
+    const barrio = document.getElementById('f-barrio').value.trim();
+    if (!calle)  { showToast('⚠️ Ingresá la calle y número'); document.getElementById('f-calle').focus(); return false; }
+    if (!barrio) { showToast('⚠️ Ingresá el barrio o localidad'); document.getElementById('f-barrio').focus(); return false; }
+  }
+  return true;
+}
+
 function abrirModal(mode) {
   if (carrito.length === 0) { showToast('⚠️ El carrito está vacío'); return; }
+  if (!validarCampos()) return;
   modalMode = mode;
   const txt = generarTexto();
   document.getElementById('modal-preview').textContent = txt;
