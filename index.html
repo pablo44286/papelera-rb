@@ -418,6 +418,7 @@
   <div class="header-logo">
     <h1>Papelera RB</h1>
     <span>Funes, Santa Fe</span>
+    <span style="font-size:0.65rem;opacity:0.85;font-weight:500;letter-spacing:0.3px;">🚚 Solo reparto zona Funes-Roldán</span>
   </div>
   <button class="carrito-btn" onclick="toggleCarrito()">
     🛒 Carrito <span class="badge" id="badge">0</span>
@@ -778,6 +779,18 @@ function setEntrega(modo) {
 
 // GENERAR TEXTO PEDIDO
 
+function generarNroPedido() {
+  const now = new Date();
+  const padZ = n => String(n).padStart(2,'0');
+  const fecha = now.getFullYear() + padZ(now.getMonth()+1) + padZ(now.getDate());
+
+  // Consecutivo global — nunca se reinicia
+  let consec = parseInt(localStorage.getItem('prb_consec') || '0') + 1;
+  localStorage.setItem('prb_consec', String(consec));
+
+  return 'P-' + fecha + '-' + String(consec).padStart(4, '0');
+}
+
 function armarDatosPedido() {
   const nombre   = document.getElementById('f-nombre').value.trim();
   const tel      = document.getElementById('f-tel').value.trim();
@@ -794,41 +807,75 @@ function armarDatosPedido() {
     `${i.nombre} (${i.detalle}) x${i.qty} = $${(i.precio * i.qty).toLocaleString('es-AR')}`
   ).join(' | ');
 
-  // Items para hoja proveedor
   const items = carrito.map(i => ({
     nombre: i.nombre,
     detalle: i.detalle,
     qty: i.qty
   }));
 
-  return { nombre, telefono: tel, pago, entrega: entregaMode === 'envio' ? 'Envío' : 'Retiro',
+  const nroPedido = generarNroPedido();
+
+  return { nroPedido, nombre, telefono: tel, pago,
+           entrega: entregaMode === 'envio' ? 'Envío' : 'Retiro',
            direccion, total, detalle, notas, items };
 }
 
-async function registrarPedido(dataPedido) {
-  try {
-    // Usar GET con datos codificados en URL para evitar CORS con Apps Script
+function registrarPedidoJSONP(dataPedido) {
+  return new Promise((resolve) => {
+    const callbackName = 'prb_cb_' + Date.now();
+    const timeout = setTimeout(() => {
+      delete window[callbackName];
+      document.getElementById('jsonp-container')?.remove();
+      console.warn('Timeout registrando pedido');
+      resolve(dataPedido.nroPedido);
+    }, 8000);
+
+    window[callbackName] = function(json) {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      document.getElementById('jsonp-container')?.remove();
+      resolve(json.nro || dataPedido.nroPedido);
+    };
+
     const params = encodeURIComponent(JSON.stringify(dataPedido));
-    const url = APPS_SCRIPT_URL + '?data=' + params;
-    await fetch(url, { method: 'GET', mode: 'no-cors' });
-  } catch(e) {
-    console.warn('No se pudo registrar el pedido:', e);
-  }
+    const url = APPS_SCRIPT_URL + '?data=' + params + '&callback=' + callbackName;
+    const container = document.createElement('div');
+    container.id = 'jsonp-container';
+    const script = document.createElement('script');
+    script.src = url;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      container.remove();
+      console.warn('Error en script JSONP');
+      resolve(dataPedido.nroPedido);
+    };
+    container.appendChild(script);
+    document.body.appendChild(container);
+  });
+}
+
+async function registrarPedido(dataPedido) {
+  return await registrarPedidoJSONP(dataPedido);
 }
 
 
-function generarTexto() {
-  const nombre = document.getElementById('f-nombre').value.trim();
-  const tel = document.getElementById('f-tel').value.trim();
-  const pago = document.querySelector('input[name="pago"]:checked').value;
-  const notas = document.getElementById('f-notas').value.trim();
-  const total = carrito.reduce((s, i) => s + i.precio * i.qty, 0);
+// Variable global para compartir nroPedido entre generarTexto y enviarWsp
+let _pedidoActual = null;
+
+function generarTexto(datos) {
+  if (!datos) datos = armarDatosPedido();
+  _pedidoActual = datos;
+  const nombre = datos.nombre;
+  const tel    = datos.telefono;
+  const pago   = datos.pago;
+  const notas  = datos.notas;
+  const total  = datos.total;
+  const nroPedido = datos.nroPedido;
 
   let entrega = '';
   if (entregaMode === 'envio') {
-    const calle = document.getElementById('f-calle').value.trim();
-    const barrio = document.getElementById('f-barrio').value.trim();
-    entrega = `📦 Envío a: ${calle}, ${barrio}`;
+    entrega = `📦 Envío a: ${datos.direccion}`;
   } else {
     const dia = document.getElementById('f-dia').value;
     const horario = document.getElementById('f-horario').value;
@@ -836,8 +883,6 @@ function generarTexto() {
   }
 
   const now = new Date();
-  const padZ = n => String(n).padStart(2,'0');
-  const nroPedido = 'P-' + now.getFullYear() + padZ(now.getMonth()+1) + padZ(now.getDate()) + '-' + padZ(now.getHours()) + padZ(now.getMinutes());
   let txt = `🛒 *PEDIDO - PAPELERA RB*\n`;
   txt += `🔖 *N° Pedido: ${nroPedido}*\n`;
   txt += `📅 ${now.toLocaleDateString('es-AR')}\n\n`;
@@ -872,7 +917,8 @@ function abrirModal(mode) {
   if (carrito.length === 0) { showToast('⚠️ El carrito está vacío'); return; }
   if (!validarCampos()) return;
   modalMode = mode;
-  const txt = generarTexto();
+  const datos = armarDatosPedido();
+  const txt = generarTexto(datos);
   document.getElementById('modal-preview').textContent = txt;
 
   const btns = document.getElementById('modal-btns');
@@ -892,9 +938,12 @@ function abrirModal(mode) {
 function cerrarModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
 async function enviarWsp() {
-  const txt = generarTexto();
-  const data = armarDatosPedido();
-  await registrarPedido(data);
+  const data = _pedidoActual || armarDatosPedido();
+  // Registrar y obtener nro definitivo del Sheet
+  const nroDefinitivo = await registrarPedido(data);
+  if (nroDefinitivo) data.nroPedido = nroDefinitivo;
+  // Generar texto con nro definitivo
+  const txt = generarTexto(data);
   const encoded = encodeURIComponent(txt);
   window.open(`https://wa.me/5493476609867?text=${encoded}`, '_blank');
   cerrarModal();
