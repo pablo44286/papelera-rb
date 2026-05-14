@@ -89,7 +89,7 @@ body { font-family: 'Inter', sans-serif; background: var(--fondo); color: var(--
 
 /* CHIPS CATEGORÍAS */
 .cats-bar {
-  display: none;
+  display: block;
 }
 .cats-grid-wrap {
   padding: 14px 16px;
@@ -114,7 +114,9 @@ body { font-family: 'Inter', sans-serif; background: var(--fondo); color: var(--
   gap: 6px;
 }
 .cat-card:hover { border-color: var(--azul); transform: translateY(-2px); }
-.cat-card.active { border-color: var(--azul); background: #0C2744; }
+.cat-card.active { border-color: var(--azul); background: #185FA5; }
+.cat-card.active .cat-nombre { color: white; }
+.cat-card.active .cat-count { color: #B5D4F4; }
 .cat-emoji { font-size: 2rem; line-height: 1; }
 .cat-nombre { font-size: 12px; font-weight: 500; color: var(--texto); line-height: 1.3; }
 .cat-count { font-size: 11px; color: var(--gris); }
@@ -576,6 +578,151 @@ main { padding: 14px 16px; }
     font-size: 12px;
     cursor: pointer;
     font-family: 'Inter', sans-serif;
+  }
+
+
+  /* ─── ADMIN TABS ─────────────────────────────────────────────────────────── */
+  .admin-tabs {
+    display: flex;
+    background: #042C53;
+    border-bottom: 1px solid #1E4976;
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .admin-tabs::-webkit-scrollbar { display: none; }
+  .admin-tab {
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #85B7EB;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  .admin-tab:hover { color: #E6F1FB; }
+  .admin-tab.active { color: white; border-bottom-color: #378ADD; }
+
+  .admin-section { display: none; flex: 1; flex-direction: column; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .admin-section.active { display: flex; }
+
+  /* Precios en lote */
+  .lote-toolbar {
+    padding: 12px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--borde);
+    flex-shrink: 0;
+    background: #0C1F35;
+  }
+  .lote-select {
+    padding: 7px 10px;
+    border: 1.5px solid var(--borde);
+    border-radius: 8px;
+    font-size: 12px;
+    background: #0C2744;
+    color: var(--texto);
+    outline: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .lote-input {
+    width: 80px;
+    padding: 7px 10px;
+    border: 1.5px solid var(--borde);
+    border-radius: 8px;
+    font-size: 12px;
+    background: #0C2744;
+    color: var(--texto);
+    outline: none;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-lote {
+    padding: 7px 14px;
+    background: var(--azul);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-lote:hover { background: var(--azul-oscuro); }
+  .btn-lote-warn {
+    padding: 7px 14px;
+    background: #1E4976;
+    color: #85B7EB;
+    border: 1px solid #1E4976;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .lote-stat { font-size: 11px; color: var(--gris); }
+  .precio-nuevo { font-family: monospace; font-size: 12px; color: #34d399; }
+  .precio-variacion { font-size: 11px; color: var(--gris); }
+  .precio-variacion.up { color: #f87171; }
+  .precio-variacion.down { color: #34d399; }
+
+  /* Descarga */
+  .descarga-wrap { padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+  .descarga-group { background: #0C2744; border-radius: 12px; padding: 16px; border: 1px solid var(--borde); }
+  .descarga-group label { font-size: 11px; font-weight: 600; color: var(--azul-medio); text-transform: uppercase; letter-spacing: .05em; display: block; margin-bottom: 10px; }
+  .radio-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-opt-dark { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--texto); cursor: pointer; }
+  .btn-descarga {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, var(--azul), var(--azul-medio));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* Config */
+  .config-wrap { padding: 20px 16px; display: flex; flex-direction: column; gap: 12px; }
+  .config-field { display: flex; flex-direction: column; gap: 5px; }
+  .config-field label { font-size: 11px; font-weight: 600; color: var(--azul-medio); text-transform: uppercase; letter-spacing: .05em; }
+  .config-input {
+    padding: 10px 12px;
+    border: 1.5px solid var(--borde);
+    border-radius: 8px;
+    font-size: 13px;
+    background: #0C2744;
+    color: var(--texto);
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    transition: border 0.15s;
+  }
+  .config-input:focus { border-color: var(--azul); }
+  .btn-config-save {
+    padding: 13px;
+    background: linear-gradient(135deg, #059669, #34d399);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    margin-top: 8px;
   }
 
 </style>
@@ -1253,34 +1400,123 @@ function descargarPDF() {
       <span class="error-msg" id="admin-error"></span>
     </div>
 
-    <!-- EDITOR -->
+    <!-- EDITOR CON TABS -->
     <div class="admin-editor" id="admin-editor">
-      <div class="admin-toolbar">
-        <input type="text" class="admin-search" id="admin-search" placeholder="🔍 Buscar producto..." oninput="filtrarAdmin()">
-        <span class="admin-stat" id="admin-stat">0 productos</span>
+
+      <!-- TABS -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchTab('precios')">💲 Precios</button>
+        <button class="admin-tab" onclick="switchTab('lote')">📊 Ajuste en lote</button>
+        <button class="admin-tab" onclick="switchTab('descarga')">⬇️ Descargar lista</button>
+        <button class="admin-tab" onclick="switchTab('config')">⚙️ Configuración</button>
       </div>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Producto</th>
-              <th>Categoría</th>
-              <th>Detalle</th>
-              <th>Precio actual</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="admin-tbody"></tbody>
-        </table>
-      </div>
-      <div class="admin-footer">
-        <span class="admin-footer-note">Los cambios se guardan en Google Sheet automáticamente.</span>
-        <div style="display:flex;gap:8px">
-          <button class="btn-logout" onclick="exportarCatalogoPDF()" style="color:#85B7EB;border-color:#1E4976">📄 Exportar catálogo PDF</button>
-          <button class="btn-logout" onclick="logoutAdmin()">Cerrar sesión</button>
+
+      <!-- TAB 1: PRECIOS INDIVIDUALES -->
+      <div class="admin-section active" id="tab-precios">
+        <div class="admin-toolbar">
+          <input type="text" class="admin-search" id="admin-search" placeholder="🔍 Buscar producto..." oninput="filtrarAdmin()">
+          <span class="admin-stat" id="admin-stat">0 productos</span>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th><th>Producto</th><th>Categoría</th><th>Detalle</th>
+                <th>Precio actual</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody"></tbody>
+          </table>
         </div>
       </div>
+
+      <!-- TAB 2: AJUSTE EN LOTE -->
+      <div class="admin-section" id="tab-lote">
+        <div class="lote-toolbar">
+          <select class="lote-select" id="lote-cat">
+            <option value="">Todas las categorías</option>
+          </select>
+          <select class="lote-select" id="lote-accion">
+            <option value="aumentar">Aumentar %</option>
+            <option value="bajar">Bajar %</option>
+            <option value="fijo">Precio fijo $</option>
+            <option value="sumar">Sumar $</option>
+          </select>
+          <input type="number" class="lote-input" id="lote-valor" placeholder="0" min="0">
+          <button class="btn-lote" onclick="aplicarLote()">Aplicar</button>
+          <button class="btn-lote-warn" onclick="deshacerLote()">↩ Deshacer</button>
+          <span class="lote-stat" id="lote-stat"></span>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="lote-all" onchange="toggleLoteAll(this)"></th>
+                <th>Producto</th><th>Categoría</th><th>Precio actual</th>
+                <th>Precio nuevo</th><th>Variación</th>
+              </tr>
+            </thead>
+            <tbody id="lote-tbody"></tbody>
+          </table>
+        </div>
+        <div class="admin-footer">
+          <span class="admin-footer-note" id="lote-modificados">0 modificados</span>
+          <button class="btn-lote" onclick="guardarLote()" id="btn-guardar-lote" style="opacity:0.4;cursor:not-allowed">✓ Guardar cambios</button>
+        </div>
+      </div>
+
+      <!-- TAB 3: DESCARGA -->
+      <div class="admin-section" id="tab-descarga">
+        <div class="descarga-wrap">
+          <div class="descarga-group">
+            <label>Formato de descarga</label>
+            <div class="radio-row">
+              <label class="radio-opt-dark"><input type="radio" name="dl-fmt" value="csv" checked> CSV (Excel/Sheets)</label>
+              <label class="radio-opt-dark"><input type="radio" name="dl-fmt" value="html"> HTML imprimible</label>
+              <label class="radio-opt-dark"><input type="radio" name="dl-fmt" value="txt"> Texto plano</label>
+            </div>
+          </div>
+          <div class="descarga-group">
+            <label>Ordenar por</label>
+            <div class="radio-row">
+              <label class="radio-opt-dark"><input type="radio" name="dl-orden" value="cat" checked> Categoría</label>
+              <label class="radio-opt-dark"><input type="radio" name="dl-orden" value="nombre"> Nombre A–Z</label>
+              <label class="radio-opt-dark"><input type="radio" name="dl-orden" value="precio"> Precio ↑</label>
+            </div>
+          </div>
+          <button class="btn-descarga" onclick="descargarLista()">⬇️ Descargar archivo</button>
+          <button class="btn-descarga" onclick="exportarCatalogoPDF()" style="background:linear-gradient(135deg,#042C53,#185FA5);margin-top:-8px">📄 Exportar catálogo PDF</button>
+        </div>
+      </div>
+
+      <!-- TAB 4: CONFIGURACIÓN -->
+      <div class="admin-section" id="tab-config">
+        <div class="config-wrap">
+          <div class="config-field">
+            <label>WhatsApp (con código de país)</label>
+            <input type="tel" class="config-input" id="cfg-wsp" placeholder="5493476609867">
+          </div>
+          <div class="config-field">
+            <label>Email de contacto</label>
+            <input type="email" class="config-input" id="cfg-email" placeholder="papelerarb1@gmail.com">
+          </div>
+          <div class="config-field">
+            <label>Nueva contraseña admin</label>
+            <input type="password" class="config-input" id="cfg-pwd" placeholder="Dejá vacío para no cambiar">
+          </div>
+          <div class="config-field">
+            <label>Zona de reparto (texto en header)</label>
+            <input type="text" class="config-input" id="cfg-zona" placeholder="Solo zona Funes · Roldán">
+          </div>
+          <button class="btn-config-save" onclick="guardarConfig()">✓ Guardar configuración</button>
+        </div>
+      </div>
+
+      <div class="admin-footer">
+        <span class="admin-footer-note">Papelera RB · Panel Admin</span>
+        <button class="btn-logout" onclick="logoutAdmin()">Cerrar sesión</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1331,6 +1567,7 @@ function showToast(msg) {
 
 // INIT
 async function init() {
+  aplicarConfig();
   // Mostrar cargando en cats-bar
   document.getElementById('cats-bar').innerHTML = '<span style="font-size:13px;color:#378ADD;padding:8px 4px;">⏳ Cargando productos...</span>';
   document.getElementById('cat-banner').style.display = 'none';
@@ -1376,6 +1613,7 @@ function loginAdmin() {
     document.getElementById('admin-pwd').value = '';
     document.getElementById('admin-error').textContent = '';
     cargarProductosAdmin();
+  setTimeout(() => renderLoteTabla(), 500);
   } else {
     document.getElementById('admin-error').textContent = 'Contraseña incorrecta';
     document.getElementById('admin-pwd').value = '';
@@ -1485,6 +1723,264 @@ function exportarCatalogoPDF() {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   showToast('✓ Catálogo descargado — abrilo y guardalo como PDF');
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach((t,i) => {
+    const tabs = ['precios','lote','descarga','config'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'lote') renderLoteTabla();
+  if (tab === 'config') cargarConfig();
+}
+
+// ─── AJUSTE EN LOTE ──────────────────────────────────────────────────────────
+let lotePrevios = {};  // backup precios originales
+
+function renderLoteTabla(filtro = '') {
+  // Poblar select de categorías
+  const sel = document.getElementById('lote-cat');
+  const catActual = sel.value;
+  sel.innerHTML = '<option value="">Todas las categorías</option>' +
+    [...new Set(productosAdmin.map(p => p.categoria))].sort()
+      .map(c => `<option value="${c}">${c}</option>`).join('');
+  sel.value = catActual;
+
+  const catFiltro = sel.value;
+  const lista = catFiltro
+    ? productosAdmin.filter(p => p.categoria === catFiltro)
+    : productosAdmin;
+
+  document.getElementById('lote-tbody').innerHTML = lista.map(p => `
+    <tr id="lote-row-${p.id}">
+      <td><input type="checkbox" class="lote-chk" data-id="${p.id}" checked></td>
+      <td style="font-size:12px;font-weight:500">${p.nombre}</td>
+      <td style="font-size:11px;color:var(--azul-medio)">${p.categoria}</td>
+      <td style="font-family:monospace;font-size:12px">$${Number(p.precio).toLocaleString('es-AR')}</td>
+      <td class="precio-nuevo" id="lote-nuevo-${p.id}">—</td>
+      <td class="precio-variacion" id="lote-var-${p.id}">—</td>
+    </tr>`).join('');
+}
+
+function toggleLoteAll(chk) {
+  document.querySelectorAll('.lote-chk').forEach(c => c.checked = chk.checked);
+}
+
+function aplicarLote() {
+  const accion = document.getElementById('lote-accion').value;
+  const valor  = parseFloat(document.getElementById('lote-valor').value) || 0;
+  if (!valor) { showToast('⚠️ Ingresá un valor'); return; }
+
+  const chks = document.querySelectorAll('.lote-chk:checked');
+  let count = 0;
+
+  chks.forEach(chk => {
+    const id = chk.dataset.id;
+    const prod = productosAdmin.find(p => String(p.id) === String(id));
+    if (!prod) return;
+
+    if (!lotePrevios[id]) lotePrevios[id] = prod.precio;
+
+    let nuevo;
+    const original = lotePrevios[id];
+    if (accion === 'aumentar') nuevo = Math.round(original * (1 + valor/100));
+    else if (accion === 'bajar') nuevo = Math.round(original * (1 - valor/100));
+    else if (accion === 'fijo')  nuevo = valor;
+    else if (accion === 'sumar') nuevo = Math.round(original + valor);
+
+    if (nuevo < 0) nuevo = 0;
+
+    const diff = nuevo - original;
+    const pct  = ((diff / original) * 100).toFixed(1);
+
+    const elNuevo = document.getElementById(`lote-nuevo-${id}`);
+    const elVar   = document.getElementById(`lote-var-${id}`);
+    if (elNuevo) elNuevo.textContent = '$' + nuevo.toLocaleString('es-AR');
+    if (elVar) {
+      elVar.textContent = (diff >= 0 ? '+' : '') + pct + '%';
+      elVar.className = 'precio-variacion ' + (diff >= 0 ? 'up' : 'down');
+    }
+
+    prod._precioNuevo = nuevo;
+    count++;
+  });
+
+  document.getElementById('lote-modificados').textContent = `${count} modificados`;
+  const btn = document.getElementById('btn-guardar-lote');
+  if (count > 0) { btn.style.opacity='1'; btn.style.cursor='pointer'; }
+}
+
+function deshacerLote() {
+  Object.entries(lotePrevios).forEach(([id, precio]) => {
+    const prod = productosAdmin.find(p => String(p.id) === String(id));
+    if (prod) {
+      delete prod._precioNuevo;
+      const elNuevo = document.getElementById(`lote-nuevo-${id}`);
+      const elVar   = document.getElementById(`lote-var-${id}`);
+      if (elNuevo) elNuevo.textContent = '—';
+      if (elVar)   elVar.textContent = '—';
+    }
+  });
+  lotePrevios = {};
+  document.getElementById('lote-modificados').textContent = '0 modificados';
+  const btn = document.getElementById('btn-guardar-lote');
+  btn.style.opacity='0.4'; btn.style.cursor='not-allowed';
+  showToast('↩ Cambios revertidos');
+}
+
+async function guardarLote() {
+  const modificados = productosAdmin.filter(p => p._precioNuevo !== undefined);
+  if (!modificados.length) { showToast('⚠️ No hay cambios para guardar'); return; }
+
+  const btn = document.getElementById('btn-guardar-lote');
+  btn.textContent = '⏳ Guardando...';
+
+  let ok = 0;
+  for (const prod of modificados) {
+    try {
+      await new Promise((resolve, reject) => {
+        const cbName = 'loteCB_' + Date.now() + '_' + ok;
+        const timeout = setTimeout(() => { delete window[cbName]; resolve(); }, 8000);
+        window[cbName] = (json) => { clearTimeout(timeout); delete window[cbName]; resolve(json); };
+        const script = document.createElement('script');
+        script.src = `${APPS_SCRIPT_URL}?accion=updatePrecio&id=${encodeURIComponent(prod.id)}&precio=${prod._precioNuevo}&callback=${cbName}`;
+        script.onerror = () => resolve();
+        document.body.appendChild(script);
+        setTimeout(() => script.remove(), 10000);
+      });
+      prod.precio = prod._precioNuevo;
+      delete prod._precioNuevo;
+      ok++;
+    } catch(e) {}
+  }
+
+  lotePrevios = {};
+  btn.textContent = '✓ Guardar cambios';
+  btn.style.opacity='0.4'; btn.style.cursor='not-allowed';
+  document.getElementById('lote-modificados').textContent = '0 modificados';
+  showToast(`✓ ${ok} precios actualizados`);
+  renderLoteTabla();
+  setTimeout(() => init(), 1000);
+}
+
+// ─── DESCARGA DE LISTA ────────────────────────────────────────────────────────
+function descargarLista() {
+  if (!productosAdmin.length) { showToast('⚠️ Cargá el catálogo primero'); return; }
+
+  const fmt   = document.querySelector('input[name="dl-fmt"]:checked').value;
+  const orden = document.querySelector('input[name="dl-orden"]:checked').value;
+  const fecha = new Date().toLocaleDateString('es-AR');
+
+  let lista = [...productosAdmin];
+  if (orden === 'nombre') lista.sort((a,b) => a.nombre.localeCompare(b.nombre));
+  else if (orden === 'precio') lista.sort((a,b) => Number(a.precio) - Number(b.precio));
+  else lista.sort((a,b) => a.categoria.localeCompare(b.categoria) || a.nombre.localeCompare(b.nombre));
+
+  let contenido, tipo, ext;
+
+  if (fmt === 'csv') {
+    contenido = 'ID Producto,Producto,Categoría,Detalle,Precio\n' +
+      lista.map(p => `${p.id},"${p.nombre}","${p.categoria}","${p.detalle}",${p.precio}`).join('\n');
+    tipo = 'text/csv;charset=utf-8';
+    ext  = 'csv';
+  } else if (fmt === 'txt') {
+    let txt = `LISTA DE PRECIOS — PAPELERA RB\n${fecha}\n${'='.repeat(50)}\n\n`;
+    let catAnt = '';
+    lista.forEach(p => {
+      if (p.categoria !== catAnt) { txt += `\n${p.categoria.toUpperCase()}\n${'-'.repeat(30)}\n`; catAnt = p.categoria; }
+      txt += `${p.nombre} (${p.detalle}) .............. $${Number(p.precio).toLocaleString('es-AR')}\n`;
+    });
+    contenido = txt;
+    tipo = 'text/plain;charset=utf-8';
+    ext  = 'txt';
+  } else {
+    // HTML imprimible
+    const cats = {};
+    lista.forEach(p => { if (!cats[p.categoria]) cats[p.categoria] = []; cats[p.categoria].push(p); });
+    let tablas = Object.entries(cats).map(([cat, prods]) => `
+      <div style="margin-bottom:20px;break-inside:avoid">
+        <div style="background:#185FA5;color:white;padding:7px 12px;font-size:13px;font-weight:600;border-radius:4px 4px 0 0">${cat}</div>
+        <table style="width:100%;border-collapse:collapse;border:1px solid #dce8f4;border-top:none;font-size:12px">
+          <thead><tr style="background:#E6F1FB">
+            <th style="padding:5px 8px;text-align:left">Producto</th>
+            <th style="padding:5px 8px;text-align:left;width:120px">Presentación</th>
+            <th style="padding:5px 8px;text-align:right;width:90px">Precio</th>
+          </tr></thead>
+          <tbody>${prods.map((p,i) => `
+            <tr style="background:${i%2===0?'#f4f8fc':'#fff'}">
+              <td style="padding:5px 8px">${p.nombre}</td>
+              <td style="padding:5px 8px;color:#378ADD">${p.detalle}</td>
+              <td style="padding:5px 8px;text-align:right;font-weight:600;color:#185FA5">$${Number(p.precio).toLocaleString('es-AR')}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`).join('');
+    contenido = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <style>body{font-family:Arial,sans-serif;padding:20px;color:#0C1F35}@media print{.no-print{display:none}}</style>
+      </head><body>
+      <div style="text-align:center;margin-bottom:20px">
+        <h2 style="color:#185FA5;margin:0">Papelera RB</h2>
+        <p style="color:#888;font-size:13px;margin:4px 0">Lista de Precios · ${fecha} · papelerarb1@gmail.com</p>
+      </div>${tablas}</body></html>`;
+    tipo = 'text/html;charset=utf-8';
+    ext  = 'html';
+  }
+
+  const blob = new Blob([contenido], { type: tipo });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `Lista_Precios_PapeleraRB_${fecha.replace(/\//g,'-')}.${ext}`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✓ Lista descargada');
+}
+
+// ─── CONFIGURACIÓN ────────────────────────────────────────────────────────────
+function cargarConfig() {
+  const cfg = JSON.parse(localStorage.getItem('prb_config') || '{}');
+  document.getElementById('cfg-wsp').value   = cfg.wsp   || '5493476609867';
+  document.getElementById('cfg-email').value = cfg.email || 'papelerarb1@gmail.com';
+  document.getElementById('cfg-zona').value  = cfg.zona  || 'Solo zona Funes · Roldán';
+  document.getElementById('cfg-pwd').value   = '';
+}
+
+function guardarConfig() {
+  const wsp   = document.getElementById('cfg-wsp').value.trim();
+  const email = document.getElementById('cfg-email').value.trim();
+  const pwd   = document.getElementById('cfg-pwd').value.trim();
+  const zona  = document.getElementById('cfg-zona').value.trim();
+
+  const cfg = JSON.parse(localStorage.getItem('prb_config') || '{}');
+  if (wsp)   cfg.wsp   = wsp;
+  if (email) cfg.email = email;
+  if (zona)  cfg.zona  = zona;
+  if (pwd)   cfg.adminPwd = pwd;
+
+  localStorage.setItem('prb_config', JSON.stringify(cfg));
+
+  // Aplicar cambios en vivo
+  if (zona) {
+    const subEl = document.querySelector('.logo-sub');
+    if (subEl) subEl.textContent = '🚚 ' + zona;
+  }
+
+  showToast('✓ Configuración guardada');
+  document.getElementById('cfg-pwd').value = '';
+}
+
+// Leer config al inicio
+function aplicarConfig() {
+  const cfg = JSON.parse(localStorage.getItem('prb_config') || '{}');
+  if (cfg.zona) {
+    const subEl = document.querySelector('.logo-sub');
+    if (subEl) subEl.textContent = '🚚 ' + cfg.zona;
+  }
 }
 
 function logoutAdmin() {
@@ -1647,34 +2143,123 @@ async function guardarPrecio(id) {
       <span class="error-msg" id="admin-error"></span>
     </div>
 
-    <!-- EDITOR -->
+    <!-- EDITOR CON TABS -->
     <div class="admin-editor" id="admin-editor">
-      <div class="admin-toolbar">
-        <input type="text" class="admin-search" id="admin-search" placeholder="🔍 Buscar producto..." oninput="filtrarAdmin()">
-        <span class="admin-stat" id="admin-stat">0 productos</span>
+
+      <!-- TABS -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchTab('precios')">💲 Precios</button>
+        <button class="admin-tab" onclick="switchTab('lote')">📊 Ajuste en lote</button>
+        <button class="admin-tab" onclick="switchTab('descarga')">⬇️ Descargar lista</button>
+        <button class="admin-tab" onclick="switchTab('config')">⚙️ Configuración</button>
       </div>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Producto</th>
-              <th>Categoría</th>
-              <th>Detalle</th>
-              <th>Precio actual</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="admin-tbody"></tbody>
-        </table>
-      </div>
-      <div class="admin-footer">
-        <span class="admin-footer-note">Los cambios se guardan en Google Sheet automáticamente.</span>
-        <div style="display:flex;gap:8px">
-          <button class="btn-logout" onclick="exportarCatalogoPDF()" style="color:#85B7EB;border-color:#1E4976">📄 Exportar catálogo PDF</button>
-          <button class="btn-logout" onclick="logoutAdmin()">Cerrar sesión</button>
+
+      <!-- TAB 1: PRECIOS INDIVIDUALES -->
+      <div class="admin-section active" id="tab-precios">
+        <div class="admin-toolbar">
+          <input type="text" class="admin-search" id="admin-search" placeholder="🔍 Buscar producto..." oninput="filtrarAdmin()">
+          <span class="admin-stat" id="admin-stat">0 productos</span>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th><th>Producto</th><th>Categoría</th><th>Detalle</th>
+                <th>Precio actual</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody"></tbody>
+          </table>
         </div>
       </div>
+
+      <!-- TAB 2: AJUSTE EN LOTE -->
+      <div class="admin-section" id="tab-lote">
+        <div class="lote-toolbar">
+          <select class="lote-select" id="lote-cat">
+            <option value="">Todas las categorías</option>
+          </select>
+          <select class="lote-select" id="lote-accion">
+            <option value="aumentar">Aumentar %</option>
+            <option value="bajar">Bajar %</option>
+            <option value="fijo">Precio fijo $</option>
+            <option value="sumar">Sumar $</option>
+          </select>
+          <input type="number" class="lote-input" id="lote-valor" placeholder="0" min="0">
+          <button class="btn-lote" onclick="aplicarLote()">Aplicar</button>
+          <button class="btn-lote-warn" onclick="deshacerLote()">↩ Deshacer</button>
+          <span class="lote-stat" id="lote-stat"></span>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="lote-all" onchange="toggleLoteAll(this)"></th>
+                <th>Producto</th><th>Categoría</th><th>Precio actual</th>
+                <th>Precio nuevo</th><th>Variación</th>
+              </tr>
+            </thead>
+            <tbody id="lote-tbody"></tbody>
+          </table>
+        </div>
+        <div class="admin-footer">
+          <span class="admin-footer-note" id="lote-modificados">0 modificados</span>
+          <button class="btn-lote" onclick="guardarLote()" id="btn-guardar-lote" style="opacity:0.4;cursor:not-allowed">✓ Guardar cambios</button>
+        </div>
+      </div>
+
+      <!-- TAB 3: DESCARGA -->
+      <div class="admin-section" id="tab-descarga">
+        <div class="descarga-wrap">
+          <div class="descarga-group">
+            <label>Formato de descarga</label>
+            <div class="radio-row">
+              <label class="radio-opt-dark"><input type="radio" name="dl-fmt" value="csv" checked> CSV (Excel/Sheets)</label>
+              <label class="radio-opt-dark"><input type="radio" name="dl-fmt" value="html"> HTML imprimible</label>
+              <label class="radio-opt-dark"><input type="radio" name="dl-fmt" value="txt"> Texto plano</label>
+            </div>
+          </div>
+          <div class="descarga-group">
+            <label>Ordenar por</label>
+            <div class="radio-row">
+              <label class="radio-opt-dark"><input type="radio" name="dl-orden" value="cat" checked> Categoría</label>
+              <label class="radio-opt-dark"><input type="radio" name="dl-orden" value="nombre"> Nombre A–Z</label>
+              <label class="radio-opt-dark"><input type="radio" name="dl-orden" value="precio"> Precio ↑</label>
+            </div>
+          </div>
+          <button class="btn-descarga" onclick="descargarLista()">⬇️ Descargar archivo</button>
+          <button class="btn-descarga" onclick="exportarCatalogoPDF()" style="background:linear-gradient(135deg,#042C53,#185FA5);margin-top:-8px">📄 Exportar catálogo PDF</button>
+        </div>
+      </div>
+
+      <!-- TAB 4: CONFIGURACIÓN -->
+      <div class="admin-section" id="tab-config">
+        <div class="config-wrap">
+          <div class="config-field">
+            <label>WhatsApp (con código de país)</label>
+            <input type="tel" class="config-input" id="cfg-wsp" placeholder="5493476609867">
+          </div>
+          <div class="config-field">
+            <label>Email de contacto</label>
+            <input type="email" class="config-input" id="cfg-email" placeholder="papelerarb1@gmail.com">
+          </div>
+          <div class="config-field">
+            <label>Nueva contraseña admin</label>
+            <input type="password" class="config-input" id="cfg-pwd" placeholder="Dejá vacío para no cambiar">
+          </div>
+          <div class="config-field">
+            <label>Zona de reparto (texto en header)</label>
+            <input type="text" class="config-input" id="cfg-zona" placeholder="Solo zona Funes · Roldán">
+          </div>
+          <button class="btn-config-save" onclick="guardarConfig()">✓ Guardar configuración</button>
+        </div>
+      </div>
+
+      <div class="admin-footer">
+        <span class="admin-footer-note">Papelera RB · Panel Admin</span>
+        <button class="btn-logout" onclick="logoutAdmin()">Cerrar sesión</button>
+      </div>
+
     </div>
   </div>
 </div>
