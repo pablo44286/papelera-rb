@@ -736,6 +736,8 @@ main { padding: 14px 16px; }
 .hero-chips li{font-size:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:5px 10px}
 .hero-cta{width:100%;background:#25D366;color:#06301a;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
 @media(min-width:700px){.hero h1{font-size:24px}.hero-cta{width:auto;padding:12px 20px}}
+.hero-repeat{width:100%;background:#ffffff;color:#0C2744;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;margin-bottom:8px}
+@media(min-width:700px){.hero-repeat{width:auto;padding:12px 20px;margin:0 8px 0 0}}
 </style>
 </head>
 <body>
@@ -774,6 +776,7 @@ main { padding: 14px 16px; }
       <li>🎁 Envío sin cargo desde $40.000</li>
       <li>📦 Todo en un solo pedido</li>
     </ul>
+    <button class="hero-repeat" id="btn-repetir" style="display:none" onclick="repetirPedido()"></button>
     <button class="hero-cta" onclick="contactoComercio()">🏪 ¿Tenés un comercio? Armamos tu pedido semanal</button>
   </section>
   <div class="cats-grid" id="cats-bar"></div>
@@ -953,6 +956,7 @@ async function cargarDesdeSheet() {
         const prods = rows
           .filter(r => r[1] && r[4])
           .map(r => ({
+            id: r[0],
             nombre: r[1],
             cat: r[2] || 'Varios / Descartables',
             detalle: r[3] || 'x unid.',
@@ -1168,6 +1172,57 @@ function eliminarItem(idx) {
   actualizarCarrito();
   const ctrl = document.getElementById('ctrl-' + idx);
   if (ctrl) ctrl.innerHTML = getQtyCtrl(idx);
+}
+
+// ÚLTIMO PEDIDO Y DATOS DEL CLIENTE (se guardan solo en este dispositivo)
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch(e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+function guardarUltimoPedido() {
+  lsSet('prb_ultimo', {
+    fecha: new Date().toISOString(),
+    items: carrito.map(i => ({ id: productos[i.idx]?.id, nombre: i.nombre, detalle: i.detalle, qty: i.qty }))
+  });
+  lsSet('prb_cliente', {
+    nombre: document.getElementById('f-nombre').value.trim(),
+    tel: document.getElementById('f-tel').value.trim(),
+    calle: document.getElementById('f-calle').value.trim(),
+    barrio: document.getElementById('f-barrio').value.trim(),
+    zona: document.getElementById('f-zona').value,
+    entrega: entregaMode
+  });
+}
+function cargarDatosCliente() {
+  const c = lsGet('prb_cliente');
+  if (c) {
+    ['nombre','tel','calle','barrio'].forEach(k => { if (c[k]) document.getElementById('f-' + k).value = c[k]; });
+    if (c.zona && ENVIO.dias[c.zona]) { document.getElementById('f-zona').value = c.zona; actualizarDiasEnvio(); }
+    if (c.entrega) setEntrega(c.entrega);
+  }
+  const u = lsGet('prb_ultimo');
+  const btn = document.getElementById('btn-repetir');
+  if (u && u.items && u.items.length) {
+    const f = new Date(u.fecha);
+    const n = u.items.reduce((s, i) => s + i.qty, 0);
+    btn.textContent = `🔁 Repetir mi último pedido (${f.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit'})} · ${n} unidades)`;
+    btn.style.display = '';
+  }
+}
+function repetirPedido() {
+  const u = lsGet('prb_ultimo');
+  if (!u) return;
+  carrito = [];
+  let faltan = 0;
+  u.items.forEach(it => {
+    let idx = productos.findIndex(p => it.id && String(p.id) === String(it.id));
+    if (idx < 0) idx = productos.findIndex(p => p.nombre === it.nombre && p.detalle === it.detalle);
+    if (idx < 0) { faltan++; return; }
+    const p = productos[idx];
+    carrito.push({ idx, nombre: p.nombre, detalle: p.detalle, precio: p.precio, qty: it.qty });
+  });
+  actualizarCarrito();
+  document.getElementById('carrito-panel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+  showToast(faltan ? `⚠️ ${faltan} producto(s) ya no están en la lista` : '✓ Pedido cargado con precios actualizados');
 }
 
 // CONTACTO COMERCIOS
@@ -1658,6 +1713,7 @@ async function enviarWsp() {
   // Generar texto con nro definitivo
   const txt = generarTexto(data);
   const encoded = encodeURIComponent(txt);
+  guardarUltimoPedido();
   window.open(`https://wa.me/5493476609867?text=${encoded}`, '_blank');
   cerrarModal();
 }
@@ -1688,6 +1744,7 @@ async function init() {
     productos = await cargarDesdeSheet();
     cats = [...new Set(productos.map(p => p.cat))].sort();
     renderCats();
+    cargarDatosCliente();
   } catch(e) {
     document.getElementById('cats-bar').innerHTML = '';
     document.getElementById('vista-cats').innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;">⚠️ No se pudo cargar la lista de precios.<br><br><button onclick="init()" style="padding:10px 20px;background:#185FA5;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;">🔄 Reintentar</button></div>';
