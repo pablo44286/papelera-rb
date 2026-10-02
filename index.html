@@ -887,6 +887,11 @@ h1, h2, h3, .logo-txt, .section-title, .cat-banner-txt .titulo { text-wrap: bala
 body:has(.carrito-panel.open) .admin-fab, body:has(.modal-overlay.open) .admin-fab { display: none; }
 .toast { top: calc(env(safe-area-inset-top, 0px) + 14px); bottom: auto; transform: translateX(-50%) translateY(-160%); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
 .toast.show { transform: translateX(-50%) translateY(0); }
+.cat-svg { width: 26px; height: 26px; stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; display: block; }
+.cat-banner-icon .cat-svg { width: 28px; height: 28px; }
+.prod-img .cat-svg, .list-icon .cat-svg { width: 32px; height: 32px; opacity: .9; }
+.list-icon .cat-svg { width: 22px; height: 22px; }
+.cat-card:hover .cat-svg { stroke: #7BB6EE; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 </style>
 </head>
@@ -901,7 +906,7 @@ body:has(.carrito-panel.open) .admin-fab, body:has(.modal-overlay.open) .admin-f
     </div>
     <div>
       <div class="logo-txt">Papelera RB</div>
-      <div class="logo-sub">🚚 Funes lun y mié · Roldán vie</div>
+      <div class="logo-sub">Funes lun y mié · Roldán vie</div>
     </div>
   </div>
   <div class="header-icons">
@@ -922,12 +927,12 @@ body:has(.carrito-panel.open) .admin-fab, body:has(.modal-overlay.open) .admin-f
     <h1>Descartables y embalaje para tu negocio, en la puerta de tu local.</h1>
     <p>Pedís por WhatsApp y te lo llevamos. Precio de mayorista, sin ir al mayorista.</p>
     <ul class="hero-chips">
-      <li>🚚 Funes lun y mié · Roldán vie</li>
-      <li>🎁 Envío sin cargo desde $40.000</li>
-      <li>📦 Todo en un solo pedido</li>
+      <li>Reparto: Funes lun y mié · Roldán vie</li>
+      <li>Envío sin cargo desde $40.000</li>
+      <li>Todo en un solo pedido</li>
     </ul>
     <button class="hero-repeat" id="btn-repetir" style="display:none" onclick="repetirPedido()"></button>
-    <button class="hero-cta" onclick="contactoComercio()">🏪 ¿Tenés un comercio? Armamos tu pedido semanal</button>
+    <button class="hero-cta" onclick="contactoComercio()">¿Tenés un comercio? Armamos tu pedido semanal</button>
   </section>
   <div class="cats-grid" id="cats-bar"></div>
 </div>
@@ -1133,37 +1138,58 @@ async function cargarDesdeSheet() {
 }
 
 
-const CAT_ICONS = {
-  'Accesorios': '🪣',
-  'Bandejas de Aluminio': '🥘',
-  'Bandejas de Cartón': '📦',
-  'Bandejas Doradas': '✨',
-  'Bandejas Expandido': '🫙',
-  'Bandejas Plásticas': '🥡',
-  'Blondas y Servicio': '🛒',
-  'Bolsas de Papel': '🛍️',
-  'Bolsas Delivery': '🚚',
-  'Bolsas Kraft': '🛍️',
-  'Bolsas Polietileno': '🛒',
-  'Bolsas Polipropileno': '🛒',
-  'Bolsas Riñón': '🛒',
-  'Cajas con Visor': '🎂',
-  'Cajas de Pizza': '🍕',
-  'Camisetas y Residuos': '♻️',
-  'Film y Aluminio': '🛒',
-  'Moldes de Papel': '🍰',
-  'Papel e Higiene': '🧻',
-  'Pirotines': '🧁',
-  'Potes de Telgopor': '🧊',
-  'Potes Plásticos': '🥤',
-  'Rollos para Máquina': '🧻',
-  'Utensillos y Platos': '🍽️',
-  'Varios / Descartables': '🛒',
-  'Vasos Descartables': '🥛',
-  '1 Kg': '⚖️',
-  '5 Kg': '⚖️',
+// Íconos de categoría: trazos SVG propios (reemplazan los emojis)
+const ICO = {
+  bandeja: '<path d="M3 10h18l-2 7a2 2 0 0 1-2 1.5H7A2 2 0 0 1 5 17z"/><path d="M3 10l1.5-3h15L21 10"/>',
+  aluminio: '<path d="M2 9h20l-3 9H5z"/><path d="M6.5 13h11"/>',
+  caja: '<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
+  plato: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/>',
+  bolsa: '<path d="M6 8h12l1 12H5z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  camiseta: '<path d="M7 3v4L5 9v12h14V9l-2-2V3"/><path d="M7 3c1 2 3 3 5 3s4-1 5-3"/>',
+  pizza: '<path d="M12 21L3 6a14 14 0 0 1 18 0z"/><circle cx="10" cy="10" r="1"/><circle cx="14" cy="13" r="1"/>',
+  visor: '<rect x="3" y="8" width="18" height="12" rx="1"/><rect x="7" y="11" width="10" height="5"/><path d="M3 8l3-4h12l3 4"/>',
+  vaso: '<path d="M6 4h12l-1.5 16h-9z"/><path d="M6.5 9h11"/>',
+  pote: '<path d="M5 8h14l-1 12H6z"/><rect x="4" y="5" width="16" height="3" rx="1"/>',
+  rollo: '<circle cx="7" cy="12" r="4"/><circle cx="7" cy="12" r="1"/><path d="M7 8h12v8H7"/>',
+  molde: '<path d="M5 11h14l-2 9H7z"/><path d="M5 11a7 7 0 0 1 14 0"/><path d="M10 11l-.5 9M14 11l.5 9"/>',
+  cubiertos: '<path d="M7 3v8a2 2 0 0 0 2 2v8M7 3v5M11 3v5M7 8h4"/><path d="M17 3c-2 2-2 6 0 8v10"/>',
+  delivery: '<path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  dispenser: '<rect x="7" y="3" width="10" height="14" rx="2"/><path d="M10 17v3h4v-3M10 7h4"/>',
+  balanza: '<path d="M12 3v18M5 7h14"/><path d="M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/>',
+  varios: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'
 };
-const DEFAULT_ICON = '📦';
+const ico = k => `<svg viewBox="0 0 24 24" class="cat-svg" aria-hidden="true">${ICO[k]}</svg>`;
+const CAT_ICONS = {
+  'Accesorios': ico('dispenser'),
+  'Bandejas de Aluminio': ico('aluminio'),
+  'Bandejas de Cartón': ico('bandeja'),
+  'Bandejas Doradas': ico('plato'),
+  'Bandejas Expandido': ico('bandeja'),
+  'Bandejas Plásticas': ico('pote'),
+  'Blondas y Servicio': ico('plato'),
+  'Bolsas de Papel': ico('bolsa'),
+  'Bolsas Delivery': ico('delivery'),
+  'Bolsas Kraft': ico('bolsa'),
+  'Bolsas Polietileno': ico('camiseta'),
+  'Bolsas Polipropileno': ico('bolsa'),
+  'Bolsas Riñón': ico('bolsa'),
+  'Cajas con Visor': ico('visor'),
+  'Cajas de Pizza': ico('pizza'),
+  'Camisetas y Residuos': ico('camiseta'),
+  'Film y Aluminio': ico('rollo'),
+  'Moldes de Papel': ico('molde'),
+  'Papel e Higiene': ico('rollo'),
+  'Pirotines': ico('molde'),
+  'Potes de Telgopor': ico('pote'),
+  'Potes Plásticos': ico('pote'),
+  'Rollos para Máquina': ico('rollo'),
+  'Utensillos y Platos': ico('cubiertos'),
+  'Varios / Descartables': ico('varios'),
+  'Vasos Descartables': ico('vaso'),
+  '1 Kg': ico('balanza'),
+  '5 Kg': ico('balanza'),
+};
+const DEFAULT_ICON = ico('caja');
 
 // Parse CSV
 function parseCSV(text) {
@@ -1353,7 +1379,7 @@ function cargarDatosCliente() {
   if (u && u.items && u.items.length) {
     const f = new Date(u.fecha);
     const n = u.items.reduce((s, i) => s + i.qty, 0);
-    btn.textContent = `🔁 Repetir mi último pedido (${f.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit'})} · ${n} unidades)`;
+    btn.textContent = `Repetir mi último pedido (${f.toLocaleDateString('es-AR', {day:'2-digit', month:'2-digit'})} · ${n} unidades)`;
     btn.style.display = '';
   }
 }
