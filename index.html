@@ -729,6 +729,13 @@ main { padding: 14px 16px; }
 .envio-hint{font-size:12px;margin-bottom:6px;color:#f5b301}
 .envio-hint.ok{color:#2ecc71}
 .envio-info{font-size:12px;opacity:.8;margin:-4px 0 10px;line-height:1.4}
+.hero{background:linear-gradient(135deg,var(--azul-deep),#0C2744);border:1px solid var(--borde);border-radius:14px;padding:18px 16px;margin-bottom:14px}
+.hero h1{font-size:19px;line-height:1.25;font-weight:700;margin-bottom:6px}
+.hero p{font-size:13px;color:#B5D4F4;margin-bottom:12px}
+.hero-chips{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.hero-chips li{font-size:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:5px 10px}
+.hero-cta{width:100%;background:#25D366;color:#06301a;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
+@media(min-width:700px){.hero h1{font-size:24px}.hero-cta{width:auto;padding:12px 20px}}
 </style>
 </head>
 <body>
@@ -759,6 +766,16 @@ main { padding: 14px 16px; }
 </div>
 
 <div class="cats-grid-wrap" id="cats-grid-wrap">
+  <section class="hero">
+    <h1>Descartables y embalaje para tu negocio, en la puerta de tu local.</h1>
+    <p>Pedís por WhatsApp y te lo llevamos. Precio de mayorista, sin ir al mayorista.</p>
+    <ul class="hero-chips">
+      <li>🚚 Funes lun y mié · Roldán vie</li>
+      <li>🎁 Envío sin cargo desde $40.000</li>
+      <li>📦 Todo en un solo pedido</li>
+    </ul>
+    <button class="hero-cta" onclick="contactoComercio()">🏪 ¿Tenés un comercio? Armamos tu pedido semanal</button>
+  </section>
   <div class="cats-grid" id="cats-bar"></div>
 </div>
 
@@ -1151,6 +1168,13 @@ function eliminarItem(idx) {
   actualizarCarrito();
   const ctrl = document.getElementById('ctrl-' + idx);
   if (ctrl) ctrl.innerHTML = getQtyCtrl(idx);
+}
+
+// CONTACTO COMERCIOS
+function contactoComercio() {
+  const num = (JSON.parse(localStorage.getItem('prb_config') || '{}').wsp) || '5493476609867';
+  const msg = 'Hola Papelera RB! Tengo un comercio en Funes/Roldán y quiero armar un pedido de reposición. Rubro: ';
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 // REGLAS DE ENVÍO
