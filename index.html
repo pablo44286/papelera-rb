@@ -725,6 +725,10 @@ main { padding: 14px 16px; }
     margin-top: 8px;
   }
 
+.envio-row{font-size:13px;opacity:.85;margin-bottom:4px}
+.envio-hint{font-size:12px;margin-bottom:6px;color:#f5b301}
+.envio-hint.ok{color:#2ecc71}
+.envio-info{font-size:12px;opacity:.8;margin:-4px 0 10px;line-height:1.4}
 </style>
 </head>
 <body>
@@ -738,7 +742,7 @@ main { padding: 14px 16px; }
     </div>
     <div>
       <div class="logo-txt">Papelera RB</div>
-      <div class="logo-sub">🚚 Solo zona Funes · Roldán</div>
+      <div class="logo-sub">🚚 Funes lun y mié · Roldán vie</div>
     </div>
   </div>
   <div class="header-icons">
@@ -838,9 +842,21 @@ main { padding: 14px 16px; }
           <input type="text" id="f-calle" placeholder="San Martín 456">
         </div>
         <div class="form-group">
-          <label>Barrio / Localidad *</label>
-          <input type="text" id="f-barrio" placeholder="Funes">
+          <label>Barrio *</label>
+          <input type="text" id="f-barrio" placeholder="Barrio / referencia">
         </div>
+        <div class="form-group">
+          <label>Localidad *</label>
+          <select id="f-zona" onchange="actualizarDiasEnvio()">
+            <option value="Funes">Funes</option>
+            <option value="Roldán">Roldán</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Día de reparto</label>
+          <select id="f-dia-envio"></select>
+        </div>
+        <div class="envio-info" id="envio-info"></div>
       </div>
       <div id="campos-retiro" style="display:none;">
         <div class="form-group">
@@ -866,6 +882,10 @@ main { padding: 14px 16px; }
   </div>
   <div class="panel-footer-fijo">
     <div class="total-bar">
+      <div class="total-row envio-row" id="row-envio">
+        <span>Envío</span><span id="envio-amount">—</span>
+      </div>
+      <div class="envio-hint" id="envio-hint"></div>
       <div class="total-row">
         <span class="total-label">Total estimado</span>
         <span class="total-amount" id="total-amount">$0</span>
@@ -1133,11 +1153,48 @@ function eliminarItem(idx) {
   if (ctrl) ctrl.innerHTML = getQtyCtrl(idx);
 }
 
+// REGLAS DE ENVÍO
+const ENVIO = {
+  minimo: 25000,        // pedido mínimo para envío a domicilio
+  gratisDesde: 40000,   // envío sin cargo desde este monto
+  costo: 2500,          // cargo de envío entre el mínimo y el gratis
+  dias: { 'Funes': ['Lunes', 'Miércoles'], 'Roldán': ['Viernes'] }
+};
+const fmt = n => '$' + n.toLocaleString('es-AR');
+function subtotalCarrito() { return carrito.reduce((s, i) => s + i.precio * i.qty, 0); }
+function costoEnvio(sub) {
+  if (entregaMode !== 'envio') return 0;
+  return sub >= ENVIO.gratisDesde ? 0 : ENVIO.costo;
+}
+function actualizarDiasEnvio() {
+  const zona = document.getElementById('f-zona').value;
+  const sel = document.getElementById('f-dia-envio');
+  sel.innerHTML = ENVIO.dias[zona].map(d => `<option>${d}</option>`).join('');
+  document.getElementById('envio-info').textContent =
+    `Repartimos en ${zona} los ${ENVIO.dias[zona].join(' y ')}. Pedido mínimo ${fmt(ENVIO.minimo)} · envío sin cargo desde ${fmt(ENVIO.gratisDesde)}.`;
+}
+function actualizarEnvioUI() {
+  const sub = subtotalCarrito();
+  const row = document.getElementById('row-envio');
+  const hint = document.getElementById('envio-hint');
+  if (entregaMode !== 'envio' || sub === 0) {
+    row.style.display = 'none'; hint.textContent = ''; return sub;
+  }
+  row.style.display = '';
+  const env = costoEnvio(sub);
+  document.getElementById('envio-amount').textContent = env === 0 ? 'Sin cargo' : fmt(env);
+  hint.classList.remove('ok');
+  if (sub < ENVIO.minimo) hint.textContent = `Mínimo para envío ${fmt(ENVIO.minimo)} — te faltan ${fmt(ENVIO.minimo - sub)}`;
+  else if (sub < ENVIO.gratisDesde) hint.textContent = `Te faltan ${fmt(ENVIO.gratisDesde - sub)} para envío sin cargo`;
+  else { hint.textContent = '✓ Envío sin cargo'; hint.classList.add('ok'); }
+  return sub + env;
+}
+
 function actualizarCarrito() {
-  const total = carrito.reduce((s, i) => s + i.precio * i.qty, 0);
   const totalItems = carrito.reduce((s, i) => s + i.qty, 0);
   document.getElementById('badge').textContent = totalItems;
-  document.getElementById('total-amount').textContent = '$' + total.toLocaleString('es-AR');
+  const total = actualizarEnvioUI();
+  document.getElementById('total-amount').textContent = fmt(total);
 
   const body = document.getElementById('panel-body');
   if (carrito.length === 0) {
@@ -1171,7 +1228,9 @@ function setEntrega(modo) {
   document.getElementById('btn-retiro').classList.toggle('active', modo === 'retiro');
   document.getElementById('campos-envio').style.display = modo === 'envio' ? 'block' : 'none';
   document.getElementById('campos-retiro').style.display = modo === 'retiro' ? 'block' : 'none';
+  actualizarCarrito();
 }
+document.addEventListener('DOMContentLoaded', actualizarDiasEnvio);
 
 // GENERAR TEXTO PEDIDO
 
@@ -1192,16 +1251,22 @@ function armarDatosPedido() {
   const tel      = document.getElementById('f-tel').value.trim();
   const pago     = document.querySelector('input[name="pago"]:checked').value;
   const notas    = document.getElementById('f-notas').value.trim();
-  const total    = carrito.reduce((s, i) => s + i.precio * i.qty, 0);
+  const subtotal = subtotalCarrito();
+  const envio    = costoEnvio(subtotal);
+  const total    = subtotal + envio;
   let direccion  = '';
+  let diaEnvio   = '';
   if (entregaMode === 'envio') {
     const calle  = document.getElementById('f-calle').value.trim();
     const barrio = document.getElementById('f-barrio').value.trim();
-    direccion = `${calle}, ${barrio}`;
+    const zona   = document.getElementById('f-zona').value;
+    diaEnvio     = document.getElementById('f-dia-envio').value;
+    direccion = `${calle}, ${barrio}, ${zona} (reparto ${diaEnvio})`;
   }
-  const detalle = carrito.map(i =>
+  let detalle = carrito.map(i =>
     `${i.nombre} (${i.detalle}) x${i.qty} = $${(i.precio * i.qty).toLocaleString('es-AR')}`
   ).join(' | ');
+  if (entregaMode === 'envio') detalle += ` | Envío = ${envio === 0 ? 'sin cargo' : fmt(envio)}`;
 
   const items = carrito.map(i => ({
     nombre: i.nombre,
@@ -1213,7 +1278,7 @@ function armarDatosPedido() {
 
   return { nroPedido, nombre, telefono: tel, pago,
            entrega: entregaMode === 'envio' ? 'Envío' : 'Retiro',
-           direccion, total, detalle, notas, items };
+           direccion, diaEnvio, subtotal, envio, total, detalle, notas, items };
 }
 
 function registrarPedidoJSONP(dataPedido) {
@@ -1290,6 +1355,10 @@ function generarTexto(datos) {
   carrito.forEach(i => {
     txt += `• ${i.nombre} (${i.detalle}) x${i.qty} = $${(i.precio * i.qty).toLocaleString('es-AR')}\n`;
   });
+  if (entregaMode === 'envio') {
+    txt += `\nSubtotal: ${fmt(datos.subtotal)}`;
+    txt += `\n🚚 Envío: ${datos.envio === 0 ? 'sin cargo' : fmt(datos.envio)}`;
+  }
   txt += `\n💰 *TOTAL: $${total.toLocaleString('es-AR')}*`;
   if (notas) txt += `\n\n📝 Notas: ${notas}`;
   return txt;
@@ -1304,7 +1373,9 @@ function validarCampos() {
     const calle  = document.getElementById('f-calle').value.trim();
     const barrio = document.getElementById('f-barrio').value.trim();
     if (!calle)  { showToast('⚠️ Ingresá la calle y número'); document.getElementById('f-calle').focus(); return false; }
-    if (!barrio) { showToast('⚠️ Ingresá el barrio o localidad'); document.getElementById('f-barrio').focus(); return false; }
+    if (!barrio) { showToast('⚠️ Ingresá el barrio'); document.getElementById('f-barrio').focus(); return false; }
+    const sub = subtotalCarrito();
+    if (sub < ENVIO.minimo) { showToast(`⚠️ El mínimo para envío es ${fmt(ENVIO.minimo)}. Te faltan ${fmt(ENVIO.minimo - sub)} o elegí Retiro.`); return false; }
   }
   return true;
 }
